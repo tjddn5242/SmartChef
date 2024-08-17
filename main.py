@@ -68,11 +68,14 @@ def generate_recipe_response(ingredients, health_condition=None, craving_food=No
     prompt = (
         f"""다음 재료들이 있습니다: {', '.join(ingredients)}.
         제 건강 상태는 {health_condition}이고, 현재 {craving_food}을(를) 먹고 싶습니다. 
-        이 재료들을 사용하여 만들 수 있는 다양한 요리 레시피를 추천해 주세요. 제 건강 상태와 먹고 싶은 음식을 고려해 주세요.
+        이 재료들을 사용하여 만들 수 있는 다양한 요리 레시피를 3개이상 추천해 주세요.
+
+        그리고, 건강상태에 따른 음식 섭취방법이나 주의해야할 재료같은 것도 짧게 한줄로 요약해서 말해줘.
         
         **중요: 아래 형식에 맞추어 정확히 답변해 주세요. 추가 정보나 텍스트는 추가하지 마세요. 준수할 수 없다면 'N/A'라고 출력해 주세요.**
 
-        <출력 형식>
+        <output format>
+        건강 요약:
         요리 이름:
         조리 시간:
         필요재료:
@@ -84,50 +87,57 @@ def generate_recipe_response(ingredients, health_condition=None, craving_food=No
     response = openai.ChatCompletion.create(
         model="gpt-3.5-turbo",
         messages=[
-            {"role": "system", "content": "You are a creative and helpful chef who gives recipes in Korean."},
+            {"role": "system", "content": "You are a creative and helpful chef"},
             {"role": "user", "content": prompt}
         ]
     )
     return response['choices'][0]['message']['content'].strip()
 
 def parse_recipes(gpt_response):
+    lines = gpt_response.splitlines()  # 응답을 줄 단위로 나누기
+    
+    health_summary = None
     recipes = []
-    recipe_blocks = gpt_response.split("\n\n")  # 공백 두 줄로 레시피 블록을 나눕니다.
+    current_recipe = {}
+    parsing_steps = False
+    
+    for line in lines:
+        line = line.strip()  # 앞뒤 공백 제거
+        
+        if line.startswith("건강 요약:"):
+            health_summary = line.replace("건강 요약:", "").strip()
+        elif line.startswith("요리 이름:"):
+            if current_recipe:
+                # 마지막으로 파싱된 레시피를 리스트에 추가
+                recipes.append(current_recipe)
+                current_recipe = {}  # 새로운 레시피 시작을 위해 초기화
+            current_recipe["name"] = line.replace("요리 이름:", "").strip()
+            parsing_steps = False
+        elif line.startswith("조리 시간:"):
+            current_recipe["cooking_time"] = line.replace("조리 시간:", "").strip()
+        elif line.startswith("필요재료:"):
+            current_recipe["all_ingredients"] = line.replace("필요재료:", "").strip()
+        elif line.startswith("추가로 구비해야 하는 재료:"):
+            current_recipe["additional_ingredients"] = line.replace("추가로 구비해야 하는 재료:", "").strip()
+        elif line.startswith("요리 단계:"):
+            parsing_steps = True
+            current_recipe["steps"] = []
+        elif parsing_steps:
+            # 요리 단계가 여러 줄에 걸쳐 있을 수 있으므로 리스트로 저장
+            current_recipe["steps"].append(line)
+    
+    # 마지막 레시피 추가
+    if current_recipe:
+        recipes.append(current_recipe)
+    
+    # "알 수 없음"으로 표시된 항목들에 대한 기본 처리
+    for recipe in recipes:
+        recipe["cooking_time"] = recipe.get("cooking_time", "알 수 없음")
+        recipe["all_ingredients"] = recipe.get("all_ingredients", "알 수 없음")
+        recipe["additional_ingredients"] = recipe.get("additional_ingredients", "없음").replace("N/A", "없음")
+        recipe["steps"] = "\n".join(recipe.get("steps", []))
 
-    for block in recipe_blocks:
-        lines = block.strip().split("\n")
-        name = None
-        cooking_time = "알 수 없음"
-        all_ingredients = "없음"
-        additional_ingredients = "없음"
-        steps_start = 0
-
-        for i, line in enumerate(lines):
-            if "요리 이름:" in line:
-                name = line.replace("요리 이름:", "").strip()
-            if "조리 시간:" in line:
-                cooking_time = line.replace("조리 시간:", "").strip()
-            if "필요재료:" in line:
-                all_ingredients = line.replace("필요재료:", "").strip()
-            if "추가로 구비해야 하는 재료:" in line:
-                additional_ingredients = line.replace("추가로 구비해야 하는 재료:", "").strip()
-            if "요리 단계:" in line:
-                steps_start = i + 1
-                break
-
-        if not name:
-            name = lines[0].strip()
-
-        steps = "\n".join(lines[steps_start:])
-        recipes.append({
-            "name": name,
-            "cooking_time": cooking_time,
-            "all_ingredients": all_ingredients,
-            "additional_ingredients": additional_ingredients,
-            "steps": steps
-        })
-
-    return recipes
+    return health_summary, recipes
 
 # Streamlit 앱 설정
 st.set_page_config(page_title="Smart Fridge Recipe Recommender", page_icon="🍽️", layout="wide")
@@ -200,7 +210,17 @@ if img_file is not None:
     if st.button("음식을 추천해줘", help="Click to find recipes based on your ingredients and preferences"):
         if st.session_state.ingredients:
             gpt_response = generate_recipe_response(st.session_state.ingredients, health_condition, craving_food)
-            recipes = parse_recipes(gpt_response)
+            health_summary, recipes = parse_recipes(gpt_response)
+
+            print(gpt_response)
+            print(health_summary)
+            print(recipes)
+
+            # 건강 요약 부분을 별도로 출력
+            if health_summary:
+                st.markdown("### 건강 요약")
+                st.markdown(f"**{health_summary}**")
+                st.markdown("---")  # 구분선을 추가하여 건강 요약과 레시피를 구분
 
             st.markdown("### 추천 레시피")
 
@@ -220,5 +240,6 @@ if img_file is not None:
                         steps = recipe['steps'].split('\n')
                         for step in steps:
                             st.markdown(f"{step.strip()}")
+
 else:
     st.warning("먼저 사진을 업로드 해주세요")
