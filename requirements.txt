@@ -1,6 +1,6 @@
 streamlit
 Pillow
-openai==0.28.0
+openai==1.40.6
 torch
 transformers
 python-dotenv
