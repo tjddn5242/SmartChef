@@ -1,16 +1,16 @@
 import streamlit as st
 from PIL import Image
-import openai
+# import openai
 from transformers import CLIPProcessor, CLIPModel
 import torch
 import os
 from dotenv import load_dotenv
+from openai import OpenAI
 
 # .env 파일의 환경 변수들을 불러옵니다.
 load_dotenv()
 
 # OpenAI API Key 설정 (환경 변수 사용)
-openai.api_key = st.secrets["OPENAI_API_KEY"]
 OPENAI_API_KEY = st.secrets["OPENAI_API_KEY"]
 
 # CLIP 모델 및 프로세서 로드
@@ -85,9 +85,19 @@ def generate_recipe_response(ingredients, health_condition=None, craving_food=No
         """
     )
 
-    response = openai.ChatCompletion.create(
-        model="gpt-3.5-turbo",
-        messages=[
+    client = OpenAI()
+
+    # response = openai.ChatCompletion.create(
+    #     model="gpt-3.5-turbo",
+    #     messages=[
+    #         {"role": "system", "content": "You are a creative and helpful chef"},
+    #         {"role": "user", "content": prompt}
+    #     ]
+    # )
+
+    response = client.chat.completions.create(
+    model="gpt-4o-mini",
+     messages=[
             {"role": "system", "content": "You are a creative and helpful chef"},
             {"role": "user", "content": prompt}
         ]
