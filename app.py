@@ -11,9 +11,8 @@ load_dotenv()
 
 # OpenAI API Key 설정 (환경 변수 사용)
 openai.api_key = st.secrets["OPENAI_API_KEY"]
+OPENAI_API_KEY = st.secrets["OPENAI_API_KEY"]
 
-test_key = st.secrets["TEST_KEY"]
-st.write(test_key)
 # CLIP 모델 및 프로세서 로드
 model = CLIPModel.from_pretrained("openai/clip-vit-base-patch32")
 processor = CLIPProcessor.from_pretrained("openai/clip-vit-base-patch32")
