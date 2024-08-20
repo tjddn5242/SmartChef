@@ -102,7 +102,7 @@ def generate_recipe_response(ingredients, health_condition=None, craving_food=No
             {"role": "user", "content": prompt}
         ]
     )
-    return response['choices'][0]['message']['content'].strip()
+    return response.choices[0].message.content
 
 def parse_recipes(gpt_response):
     lines = gpt_response.splitlines()  # 응답을 줄 단위로 나누기
