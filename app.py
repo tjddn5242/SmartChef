@@ -10,7 +10,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # OpenAI API Key 설정 (환경 변수 사용)
-openai.api_key = os.getenv('OPENAI_API_KEY')
+openai.api_key = st.secrets["OPENAI_API_KEY"]
 
 # CLIP 모델 및 프로세서 로드
 model = CLIPModel.from_pretrained("openai/clip-vit-base-patch32")
