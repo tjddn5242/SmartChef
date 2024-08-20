@@ -1,6 +1,6 @@
 import streamlit as st
 from PIL import Image
-import openai
+from openai import OpenAI
 from transformers import CLIPProcessor, CLIPModel
 import torch
 import os
@@ -84,7 +84,7 @@ def generate_recipe_response(ingredients, health_condition=None, craving_food=No
         """
     )
 
-    response = openai.ChatCompletion.create(
+    response = OpenAI(api_key=OPENAI_API_KEY).chat.completions.create(
         model="gpt-3.5-turbo",
         messages=[
             {"role": "system", "content": "You are a creative and helpful chef"},
