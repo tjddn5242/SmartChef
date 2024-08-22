@@ -197,12 +197,11 @@ if img_file is not None:
         detected_ingredients = recognize_ingredients_from_image(img)
         st.write("Recognized Ingredients:")
         st.write(detected_ingredients)
-        # st.session_state.ingredients = list(set(detected_ingredients))
+        st.session_state.ingredients = list(set(detected_ingredients))
     
-    # Detected Ingredients Display (5 items per row)
-    st.markdown("### 2. 인식된 재료들을 확인해보세요.")
-
-    display_ingredients_grid(detected_ingredients)
+        # Detected Ingredients Display (5 items per row)
+        st.markdown("### 2. 인식된 재료들을 확인해보세요.")
+        display_ingredients_grid(detected_ingredients)
 
     # with st.expander("각 재료 옆의 x버튼을 눌러 잘못 인식된 재료들을 삭제 할 수 있습니다.", expanded=True):
     #     if st.session_state.ingredients:
