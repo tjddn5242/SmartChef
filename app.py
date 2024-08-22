@@ -155,6 +155,18 @@ def parse_recipes(gpt_response):
 
     return health_summary, recipes
 
+def display_ingredients_grid(ingredients):
+    """Displays ingredients in a 5x5 grid with remove buttons."""
+    cols = st.columns(5)  # Create 5 columns for the grid layout
+
+    for i, ingredient in enumerate(ingredients):
+        with cols[i % 5]:
+            # Display ingredient and remove button
+            st.write(ingredient)
+            if st.button("X", key=f"remove_{ingredient}_{i}"):
+                ingredients.pop(i)
+                st.experimental_rerun()  # Rerun to refresh the UI
+
 # Streamlit 앱 설정
 st.set_page_config(page_title="Smart Fridge Recipe Recommender", page_icon="🍽️", layout="wide")
 
@@ -189,25 +201,28 @@ if img_file is not None:
     
     # Detected Ingredients Display (5 items per row)
     st.markdown("### 2. 인식된 재료들을 확인해보세요.")
-    with st.expander("각 재료 옆의 x버튼을 눌러 잘못 인식된 재료들을 삭제 할 수 있습니다.", expanded=True):
-        if st.session_state.ingredients:
-            rows = len(st.session_state.ingredients) // 5 + 1
-            for i in range(rows):
-                cols = st.columns(5)
-                for j in range(5):
-                    idx = i * 5 + j
-                    if idx < len(st.session_state.ingredients):
-                        ingredient = st.session_state.ingredients[idx]
-                        with cols[j]:
-                            col1, col2 = st.columns([4, 1])
-                            with col1:
-                                st.markdown(f"<p style='font-size:16px;'>{ingredient}</p>", unsafe_allow_html=True)
-                            with col2:
-                                if st.button('X', key=f"remove_{ingredient}_{idx}"):
-                                    st.session_state.ingredients.pop(idx)
-                                    st.rerun()  # UI 업데이트
-        else:
-            st.markdown("<p style='font-size:16px;'>No ingredients detected yet. Please upload an image.</p>", unsafe_allow_html=True)
+
+    display_ingredients_grid(detected_ingredients)
+
+    # with st.expander("각 재료 옆의 x버튼을 눌러 잘못 인식된 재료들을 삭제 할 수 있습니다.", expanded=True):
+    #     if st.session_state.ingredients:
+    #         rows = len(st.session_state.ingredients) // 5 + 1
+    #         for i in range(rows):
+    #             cols = st.columns(5)
+    #             for j in range(5):
+    #                 idx = i * 5 + j
+    #                 if idx < len(st.session_state.ingredients):
+    #                     ingredient = st.session_state.ingredients[idx]
+    #                     with cols[j]:
+    #                         col1, col2 = st.columns([4, 1])
+    #                         with col1:
+    #                             st.markdown(f"<p style='font-size:16px;'>{ingredient}</p>", unsafe_allow_html=True)
+    #                         with col2:
+    #                             if st.button('X', key=f"remove_{ingredient}_{idx}"):
+    #                                 st.session_state.ingredients.pop(idx)
+    #                                 st.rerun()  # UI 업데이트
+    #     else:
+    #         st.markdown("<p style='font-size:16px;'>No ingredients detected yet. Please upload an image.</p>", unsafe_allow_html=True)
 
     # 재료 추가 기능
     st.markdown("### 3. 인식하지 못한 재료들을 입력해서 추가해보세요.")
