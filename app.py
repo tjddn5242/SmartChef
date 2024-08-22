@@ -91,15 +91,6 @@ def generate_recipe_response(ingredients, health_condition=None, craving_food=No
     )
 
     client = OpenAI()
-
-    # response = openai.ChatCompletion.create(
-    #     model="gpt-3.5-turbo",
-    #     messages=[
-    #         {"role": "system", "content": "You are a creative and helpful chef"},
-    #         {"role": "user", "content": prompt}
-    #     ]
-    # )
-
     response = client.chat.completions.create(
     model="gpt-4o-mini",
      messages=[
@@ -175,34 +166,100 @@ st.markdown("<h1 style='text-align: center; color: #FF6347;'>스마트쉐프</h1
 st.markdown("<p style='text-align: center; color: #FF4500;'>냉장고에 있는 재료로 최고의 음식을 만들어드립니다</p>", unsafe_allow_html=True)
 
 # 이미지 업로드 기능
-st.markdown("### 1. 냉장고 사진을 업로드 해주세요")
-img_file = st.file_uploader("", type=["jpg", "jpeg", "png"])
-img_file = 'uploaded_image.jpg'
+# st.markdown("### 1. 냉장고 사진을 업로드 해주세요")
+# img_file = st.file_uploader("", type=["jpg", "jpeg", "png"])
+# img_file = 'uploaded_image.jpg'
 
 # 사진이 삭제되었는지 확인 (img_file이 None인 경우)
-if img_file is None:
-    if 'ingredients' in st.session_state:
-        st.session_state.ingredients = []  # 재료 리스트 초기화
+# if img_file is None:
+#     if 'ingredients' in st.session_state:
+#         st.session_state.ingredients = []  # 재료 리스트 초기화
 
-if img_file is not None:
-    img = Image.open(img_file)
+# if img_file is not None:
+#     img = Image.open(img_file)
 
-    # RGBA 이미지를 RGB로 변환
-    if img.mode == 'RGBA':
-        img = img.convert('RGB')
+#     # RGBA 이미지를 RGB로 변환
+#     if img.mode == 'RGBA':
+#         img = img.convert('RGB')
 
-    st.image(img, caption="Uploaded Image", use_column_width=True, output_format="JPEG")
+#     st.image(img, caption="Uploaded Image", use_column_width=True, output_format="JPEG")
 
-    # 이미 인식된 재료가 없는 경우에만 이미지 인식 수행
-    if 'ingredients' not in st.session_state or not st.session_state.ingredients:
-        detected_ingredients = recognize_ingredients_from_image(img)
-        st.write("Recognized Ingredients:")
-        st.write(detected_ingredients)
-        st.session_state.ingredients = list(set(detected_ingredients))
+#     # 이미 인식된 재료가 없는 경우에만 이미지 인식 수행
+#     if 'ingredients' not in st.session_state or not st.session_state.ingredients:
+#         detected_ingredients = recognize_ingredients_from_image(img)
+#         st.write("Recognized Ingredients:")
+#         st.write(detected_ingredients)
+#         st.session_state.ingredients = list(set(detected_ingredients))
     
-        # Detected Ingredients Display (5 items per row)
-        st.markdown("### 2. 인식된 재료들을 확인해보세요.")
-        display_ingredients_grid(detected_ingredients)
+#         # Detected Ingredients Display (5 items per row)
+#         st.markdown("### 2. 인식된 재료들을 확인해보세요.")
+#         display_ingredients_grid(detected_ingredients)
+
+
+# Mock ingredient list for demonstration
+ingredients = ["감자", "달걀", "파프리카", "오이", "고추", "당근"]
+
+def display_ingredients(ingredients):
+    """Displays ingredients in a vertical list with remove buttons."""
+    for i, ingredient in enumerate(ingredients):
+        with st.container():
+            col1, col2 = st.columns([5, 1])
+            with col1:
+                st.write(ingredient)
+            with col2:
+                if st.button("❌", key=f"remove_{i}"):
+                    ingredients.pop(i)
+                    st.experimental_rerun()  # Rerun to refresh the UI after removing an ingredient
+
+st.write("Recognized Ingredients:")
+display_ingredients(ingredients)
+
+# Optionally, allow users to add ingredients manually
+with st.expander("원하는 식재료를 직접 추가해보세요!"):
+    new_ingredient = st.text_input("Enter ingredient name")
+    if st.button("추가"):
+        if new_ingredient:
+            ingredients.append(new_ingredient)
+            st.experimental_rerun()
+
+# Adding some styling
+st.markdown(
+    """
+    <style>
+    .stButton>button {
+        background-color: #f5f5f5;
+        border: none;
+        border-radius: 5px;
+        padding: 5px 10px;
+        font-size: 16px;
+        cursor: pointer;
+    }
+    .stButton>button:hover {
+        background-color: #e0e0e0;
+    }
+    .stButton>button:focus {
+        outline: none;
+    }
+    .stTextInput>div>input {
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        font-size: 16px;
+    }
+    .stExpander>div>div {
+        background-color: #333;
+        color: white;
+    }
+    .stExpander>div>div>div>div {
+        font-size: 16px;
+        padding: 10px;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
+
 
     # with st.expander("각 재료 옆의 x버튼을 눌러 잘못 인식된 재료들을 삭제 할 수 있습니다.", expanded=True):
     #     if st.session_state.ingredients:
@@ -224,55 +281,55 @@ if img_file is not None:
     #     else:
     #         st.markdown("<p style='font-size:16px;'>No ingredients detected yet. Please upload an image.</p>", unsafe_allow_html=True)
 
-    # 재료 추가 기능
-    st.markdown("### 3. 인식하지 못한 재료들을 입력해서 추가해보세요.")
-    new_ingredients = st.text_input("여러 재료를 입력할 때는 콤마(,)를 이용해주세요", placeholder="EX.계란, 숙주, 소세지")
-    if st.button("재료 추가하기"):
-        if new_ingredients:
-            new_ingredients_list = [ingredient.strip() for ingredient in new_ingredients.split(',')]
-            st.session_state.ingredients.extend(new_ingredients_list)
-            st.session_state.ingredients = list(set(st.session_state.ingredients))
-            st.rerun()  # UI 업데이트
+    # # 재료 추가 기능
+    # st.markdown("### 3. 인식하지 못한 재료들을 입력해서 추가해보세요.")
+    # new_ingredients = st.text_input("여러 재료를 입력할 때는 콤마(,)를 이용해주세요", placeholder="EX.계란, 숙주, 소세지")
+    # if st.button("재료 추가하기"):
+    #     if new_ingredients:
+    #         new_ingredients_list = [ingredient.strip() for ingredient in new_ingredients.split(',')]
+    #         st.session_state.ingredients.extend(new_ingredients_list)
+    #         st.session_state.ingredients = list(set(st.session_state.ingredients))
+    #         st.rerun()  # UI 업데이트
 
-    # 사용자 건강 상태와 땡기는 음식 입력 받기
-    st.markdown("### 4. 가지고 있는 질병과 현재 땡기는 음식을 말씀해주세요.")
-    health_condition = st.text_input("가지고 있는 질병이 있다면 입력해주세요 (ex. 당뇨병, 야맹증, 고혈압 등)", placeholder="없다면 입력하지 않으셔도 됩니다")
-    craving_food = st.text_input("지금 땡기는 음식이 있다면 입력해주세요", placeholder="없다면 입력하지 않으셔도 됩니다")
+    # # 사용자 건강 상태와 땡기는 음식 입력 받기
+    # st.markdown("### 4. 가지고 있는 질병과 현재 땡기는 음식을 말씀해주세요.")
+    # health_condition = st.text_input("가지고 있는 질병이 있다면 입력해주세요 (ex. 당뇨병, 야맹증, 고혈압 등)", placeholder="없다면 입력하지 않으셔도 됩니다")
+    # craving_food = st.text_input("지금 땡기는 음식이 있다면 입력해주세요", placeholder="없다면 입력하지 않으셔도 됩니다")
 
-    # Analyze 버튼
-    if st.button("음식을 추천해줘", help="Click to find recipes based on your ingredients and preferences"):
-        if st.session_state.ingredients:
-            gpt_response = generate_recipe_response(st.session_state.ingredients, health_condition, craving_food)
-            health_summary, recipes = parse_recipes(gpt_response)
+    # # Analyze 버튼
+    # if st.button("음식을 추천해줘", help="Click to find recipes based on your ingredients and preferences"):
+    #     if st.session_state.ingredients:
+    #         gpt_response = generate_recipe_response(st.session_state.ingredients, health_condition, craving_food)
+    #         health_summary, recipes = parse_recipes(gpt_response)
 
-            print(gpt_response)
-            print(health_summary)
-            print(recipes)
+    #         print(gpt_response)
+    #         print(health_summary)
+    #         print(recipes)
 
-            # 건강 요약 부분을 별도로 출력
-            if health_summary:
-                st.markdown("### 건강 요약")
-                st.markdown(f"**{health_summary}**")
-                st.markdown("---")  # 구분선을 추가하여 건강 요약과 레시피를 구분
+    #         # 건강 요약 부분을 별도로 출력
+    #         if health_summary:
+    #             st.markdown("### 건강 요약")
+    #             st.markdown(f"**{health_summary}**")
+    #             st.markdown("---")  # 구분선을 추가하여 건강 요약과 레시피를 구분
 
-            st.markdown("### 추천 레시피")
+    #         st.markdown("### 추천 레시피")
 
-            cols = st.columns(3)  # 3개의 열로 카드 형식의 레이아웃 생성
+    #         cols = st.columns(3)  # 3개의 열로 카드 형식의 레이아웃 생성
 
-            for i, recipe in enumerate(recipes):
-                with cols[i % 3]:
-                    st.markdown(f"<h3 style='color: #FF4500;'>{recipe['name']}</h3>", unsafe_allow_html=True)
-                    st.markdown(f"조리시간: {recipe['cooking_time']}")
-                    st.markdown(f"필요재료: {recipe['all_ingredients']}")
-                    st.markdown(f"추가구비재료: {recipe['additional_ingredients']}")
+    #         for i, recipe in enumerate(recipes):
+    #             with cols[i % 3]:
+    #                 st.markdown(f"<h3 style='color: #FF4500;'>{recipe['name']}</h3>", unsafe_allow_html=True)
+    #                 st.markdown(f"조리시간: {recipe['cooking_time']}")
+    #                 st.markdown(f"필요재료: {recipe['all_ingredients']}")
+    #                 st.markdown(f"추가구비재료: {recipe['additional_ingredients']}")
 
-                    # Expander 사용하여 준비 단계 표시
-                    with st.expander("조리방법보기"):
-                        st.markdown("#### 조리 방법")
-                        # 조리 단계에서 줄바꿈 적용하여 표시
-                        steps = recipe['steps'].split('\n')
-                        for step in steps:
-                            st.markdown(f"{step.strip()}")
+    #                 # Expander 사용하여 준비 단계 표시
+    #                 with st.expander("조리방법보기"):
+    #                     st.markdown("#### 조리 방법")
+    #                     # 조리 단계에서 줄바꿈 적용하여 표시
+    #                     steps = recipe['steps'].split('\n')
+    #                     for step in steps:
+    #                         st.markdown(f"{step.strip()}")
 
-else:
-    st.warning("먼저 사진을 업로드 해주세요")
+# else:
+#     st.warning("먼저 사진을 업로드 해주세요")
