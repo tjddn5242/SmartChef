@@ -6,8 +6,8 @@ from openai import OpenAI
 import base64
 import requests
 from io import BytesIO
+import ast
 import time
-import sys
 
 # .env 파일의 환경 변수들을 불러옵니다.
 load_dotenv()
@@ -29,39 +29,33 @@ def encode_image(image):
 
 
 def recognize_ingredients_from_image(image):
-    """Recognizes ingredients from an image and returns them as a list."""
-    print("Processing image...", end="")
-    
-    # Encode the image to base64
-    base64_image = encode_image(image)
-    
-    # 로딩 표시
-    for _ in range(3):
-        sys.stdout.write(".")
-        sys.stdout.flush()
-        time.sleep(0.5)
-    
-    headers = {
-        "Content-Type": "application/json",
-        "Authorization": f"Bearer {OPENAI_API_KEY}"
-    }
-    payload = {
-        "model": "gpt-4o-mini",
-        "messages": [
-            {
-                "role": "user",
-                "content": [
-                    {"type": "text", "text": "입력받은 냉장고 속 이미지에서 확실하게 보이는 식재료들만 리스트로 뽑아줘. 불필요한 설명은 제외. format example : ['계란','호박','사과']"},
-                    {"type": "image_url", "image_url": {"url": f"data:image/jpeg;base64,{base64_image}"}}
-                ]
-            }
-        ],
-        "max_tokens": 300
-    }
-    response = requests.post("https://api.openai.com/v1/chat/completions", headers=headers, json=payload)
-    
-    ingredients_list = response.json()['choices'][0]['message']['content']
-    print("Done!")
+    with st.spinner("Processing image..."):
+        time.sleep(2)  # 인코딩 작업 (모의)
+        base64_image = encode_image(image)
+        
+        headers = {
+            "Content-Type": "application/json",
+            "Authorization": f"Bearer {OPENAI_API_KEY}"
+        }
+        payload = {
+            "model": "gpt-4o-mini",
+            "messages": [
+                {
+                    "role": "user",
+                    "content": [
+                        {"type": "text", "text": "입력받은 냉장고 속 이미지에서 확실하게 보이는 식재료들만 리스트로 뽑아줘. 이때 식재료와 관련한 이모지를 같이 붙여줘. 불필요한 설명은 제외. format example : ['🥚계란','🎃호박','🍎사과']"},
+                        {"type": "image_url", "image_url": {"url": f"data:image/jpeg;base64,{base64_image}"}}
+                    ]
+                }
+            ],
+            "max_tokens": 300
+        }
+        
+        response = requests.post("https://api.openai.com/v1/chat/completions", headers=headers, json=payload)
+        ingredients_list = response.json()['choices'][0]['message']['content']
+        ingredients_list = ast.literal_eval(ingredients_list)
+        
+    st.success("Done!")
     return ingredients_list
 
 def generate_recipe_response(ingredients, health_condition=None, craving_food=None):
@@ -89,14 +83,16 @@ def generate_recipe_response(ingredients, health_condition=None, craving_food=No
         """
     )
 
-    client = OpenAI()
-    response = client.chat.completions.create(
-    model="gpt-4o-mini",
-     messages=[
-            {"role": "system", "content": "You are a creative and helpful chef"},
-            {"role": "user", "content": prompt}
-        ]
-    )
+    with st.spinner("Generating recipe..."):
+        client = OpenAI()
+        response = client.chat.completions.create(
+        model="gpt-4o-mini",
+         messages=[
+                {"role": "system", "content": "You are a creative and helpful chef"},
+                {"role": "user", "content": prompt}
+            ]
+        )
+
     return response.choices[0].message.content
 
 def parse_recipes(gpt_response):
@@ -154,8 +150,8 @@ st.markdown("<p style='text-align: center; color: #FF4500;'>냉장고에 있는 
 
 # 이미지 업로드 기능
 st.markdown("### 1. 냉장고 사진을 업로드 해주세요")
-img_file = st.file_uploader("", type=["jpg", "jpeg", "png"])
-# img_file = 'uploaded_image.jpg' # 디버깅용
+# img_file = st.file_uploader("", type=["jpg", "jpeg", "png"])
+img_file = 'uploaded_image.jpg' # 디버깅용 ===========================================================================
 
 # 사진이 삭제되었는지 확인 (img_file이 None인 경우)
 if img_file is None:
@@ -174,9 +170,9 @@ if img_file is not None:
     # 이미 인식된 재료가 없는 경우에만 이미지 인식 수행
     if 'ingredients' not in st.session_state or not st.session_state.ingredients:
         detected_ingredients = recognize_ingredients_from_image(img)
-        # detected_ingredients = ["감자", "달걀", "파프리카", "오이", "고추", "당근"] # 디버깅용
+        # detected_ingredients = ["🥔감자", "🥚달걀", "🫑파프리카", "🥒오이", "🌶️고추", "🥕당근"] # 디버깅용 ===========================================================================
         st.write("Recognized Ingredients:")
-        # st.write(detected_ingredients)
+        st.write(detected_ingredients) # 디버깅용 ===========================================================================
         st.session_state.ingredients = list(set(detected_ingredients))
     
         # Detected Ingredients Display (5 items per row)
@@ -189,6 +185,7 @@ if img_file is not None:
 
     with st.expander("각 재료 옆의 x버튼을 눌러 잘못 인식된 재료들을 삭제 할 수 있습니다.", expanded=True):
         if st.session_state.ingredients:
+            remove_indices = []
             rows = len(st.session_state.ingredients) // 5 + 1
             for i in range(rows):
                 cols = st.columns(5)
@@ -197,13 +194,22 @@ if img_file is not None:
                     if idx < len(st.session_state.ingredients):
                         ingredient = st.session_state.ingredients[idx]
                         with cols[j]:
-                            col1, col2 = st.columns([4, 1])
-                            with col1:
-                                st.markdown(f"<p style='font-size:16px;'>{ingredient}</p>", unsafe_allow_html=True)
-                            with col2:
-                                if st.button('X', key=f"remove_{ingredient}_{idx}"):
-                                    st.session_state.ingredients.pop(idx)
-                                    st.rerun()  # UI 업데이트
+                            # 하나의 컨테이너에 ingredient와 X 버튼을 함께 담기
+                            container = st.container(border=True)
+                            with container:
+                                col1, col2 = st.columns([4, 1])
+                                col1.markdown(f"<p style='font-size:16px;'>{ingredient}</p>", unsafe_allow_html=True)
+                                if col2.button('X', key=f"remove_{ingredient}_{idx}"):
+                                    remove_indices.append(idx)
+
+
+            if remove_indices:
+                # 인덱스를 역순으로 정렬 후 pop으로 삭제하여 인덱스 오류 방지
+                for idx in sorted(remove_indices, reverse=True):
+                    st.session_state.ingredients.pop(idx)
+                
+                # 페이지를 다시 로드하여 UI 업데이트
+                # st.query_params(updated="true")
         else:
             st.markdown("<p style='font-size:16px;'>No ingredients detected yet. Please upload an image.</p>", unsafe_allow_html=True)
 
