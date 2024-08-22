@@ -197,7 +197,7 @@ if img_file is not None:
         detected_ingredients = recognize_ingredients_from_image(img)
         st.write("Recognized Ingredients:")
         st.write(detected_ingredients)
-        st.session_state.ingredients = list(set(detected_ingredients))
+        # st.session_state.ingredients = list(set(detected_ingredients))
     
     # Detected Ingredients Display (5 items per row)
     st.markdown("### 2. 인식된 재료들을 확인해보세요.")
