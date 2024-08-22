@@ -177,7 +177,7 @@ st.markdown("<p style='text-align: center; color: #FF4500;'>냉장고에 있는 
 # 이미지 업로드 기능
 st.markdown("### 1. 냉장고 사진을 업로드 해주세요")
 img_file = st.file_uploader("", type=["jpg", "jpeg", "png"])
-img_file = 'SmartChef/uploaded_image.jpg'
+img_file = 'uploaded_image.jpg'
 
 # 사진이 삭제되었는지 확인 (img_file이 None인 경우)
 if img_file is None:
