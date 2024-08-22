@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 from openai import OpenAI
 import base64
 import requests
+from io import BytesIO
 
 # .env 파일의 환경 변수들을 불러옵니다.
 load_dotenv()
