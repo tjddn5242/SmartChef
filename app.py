@@ -14,7 +14,14 @@ OPENAI_API_KEY = st.secrets["OPENAI_API_KEY"]
 
 def encode_image(image):
     """Encodes the image file to base64 format."""
-    image_data = image.read()  # Read the image data
+    if isinstance(image, BytesIO):
+        image_data = image.read()  # Read the image data if it's a BytesIO object
+    else:
+        # If it's a PIL image, convert it to BytesIO
+        buffered = BytesIO()
+        image.save(buffered, format="JPEG")
+        image_data = buffered.getvalue()
+    
     return base64.b64encode(image_data).decode('utf-8')
 
 def recognize_ingredients_from_image(image):
