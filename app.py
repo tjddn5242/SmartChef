@@ -222,12 +222,10 @@ def manage_ingredients():
             # 알약 모양의 버튼과 제거 버튼
             st.markdown(
                 f"""
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                    <span style="background-color: #e0e0e0; border-radius: 50px; padding: 10px 20px; font-size: 16px;">
-                        {ingredient}
-                    </span>
+                <div style="display: inline-block; background-color: #e0e0e0; border-radius: 50px; padding: 10px 20px; font-size: 16px; margin-bottom: 10px; position: relative;">
+                    {ingredient}
                     <button onclick="document.getElementById('remove-{i}').click()" 
-                            style="background-color: transparent; border: none; color: red; font-size: 16px; cursor: pointer;">
+                            style="background-color: transparent; border: none; color: red; font-size: 16px; position: absolute; top: -5px; right: -5px; cursor: pointer;">
                         X
                     </button>
                 </div>
