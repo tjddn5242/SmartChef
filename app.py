@@ -174,6 +174,8 @@ if img_file is not None:
     # 이미 인식된 재료가 없는 경우에만 이미지 인식 수행
     if 'ingredients' not in st.session_state or not st.session_state.ingredients:
         detected_ingredients = recognize_ingredients_from_image(img)
+        st.write("Recognized Ingredients:")
+        st.write(detected_ingredients)
         st.session_state.ingredients = list(set(detected_ingredients))
     
     # Detected Ingredients Display (5 items per row)
