@@ -1,11 +1,10 @@
 import streamlit as st
 from PIL import Image
-# import openai
-from transformers import CLIPProcessor, CLIPModel
-import torch
 import os
 from dotenv import load_dotenv
 from openai import OpenAI
+import base64
+import requests
 
 # .env 파일의 환경 변수들을 불러옵니다.
 load_dotenv()
@@ -13,52 +12,49 @@ load_dotenv()
 # OpenAI API Key 설정 (환경 변수 사용)
 OPENAI_API_KEY = st.secrets["OPENAI_API_KEY"]
 
-# CLIP 모델 및 프로세서 로드
-model = CLIPModel.from_pretrained("openai/clip-vit-base-patch32")
-processor = CLIPProcessor.from_pretrained("openai/clip-vit-base-patch32")
-
-# 확장된 재료 리스트
-ingredient_list = [
-    "lettuce", "tomato", "cucumber", "olive oil", "banana", "strawberry", "yogurt", "honey",
-    "cheese", "bread", "egg", "chicken", "beef", "pork", "fish", "garlic", "onion", "carrot",
-    "potato", "bell pepper", "spinach", "mushroom", "avocado", "rice", "pasta", "milk", "butter",
-    "flour", "sugar", "salt", "pepper", "chocolate", "bacon", "sausage", "apple", "orange", "grapes",
-    "peanut butter", "almond", "walnut", "blueberry", "raspberry", "blackberry", "cabbage", "zucchini"
-]
-
-# 영어 재료명과 대응하는 한국어 재료명 사전
-ingredient_translation = {
-    "lettuce": "상추", "tomato": "토마토", "cucumber": "오이", "olive oil": "올리브 오일",
-    "banana": "바나나", "strawberry": "딸기", "yogurt": "요거트", "honey": "꿀",
-    "cheese": "치즈", "bread": "빵", "egg": "계란", "chicken": "닭고기", "beef": "소고기",
-    "pork": "돼지고기", "fish": "생선", "garlic": "마늘", "onion": "양파", "carrot": "당근",
-    "potato": "감자", "bell pepper": "피망", "spinach": "시금치", "mushroom": "버섯",
-    "avocado": "아보카도", "rice": "쌀", "pasta": "파스타", "milk": "우유", "butter": "버터",
-    "flour": "밀가루", "sugar": "설탕", "salt": "소금", "pepper": "후추", "chocolate": "초콜릿",
-    "bacon": "베이컨", "sausage": "소세지", "apple": "사과", "orange": "오렌지", "grapes": "포도",
-    "peanut butter": "땅콩버터", "almond": "아몬드", "walnut": "호두", "blueberry": "블루베리",
-    "raspberry": "라즈베리", "blackberry": "블랙베리", "cabbage": "양배추", "zucchini": "애호박"
-}
+def encode_image(image):
+    """Encodes the image file to base64 format."""
+    return base64.b64encode(image.read()).decode('utf-8')
 
 def recognize_ingredients_from_image(image):
-    try:
-        inputs = processor(text=ingredient_list, images=image, return_tensors="pt", padding=True)
-        outputs = model(**inputs)
-        logits_per_image = outputs.logits_per_image
-        probs = logits_per_image.softmax(dim=1)
+    """Recognizes ingredients from an image and returns them as a list."""
+    # Encode the image to base64
+    base64_image = encode_image(image)
 
-        recognized_ingredients = []
-        threshold = 0.01  # 예제 기준, 재료 인식 확률이 1% 이상일 경우
-        for i, prob in enumerate(probs[0]):
-            if prob > threshold:
-                recognized_ingredients.append(ingredient_list[i])
+    # Prepare the headers and payload for the API request
+    headers = {
+        "Content-Type": "application/json",
+        "Authorization": f"Bearer {api_key}"
+    }
 
-        # 인식된 재료를 한국어로 변환
-        recognized_ingredients_ko = [ingredient_translation.get(ingredient, ingredient) for ingredient in recognized_ingredients]
-        return recognized_ingredients_ko
-    except Exception as e:
-        st.error(f"Error in ingredient recognition: {e}")
-        return []
+    payload = {
+        "model": "gpt-4o-mini",
+        "messages": [
+            {
+                "role": "user",
+                "content": [
+                    {
+                        "type": "text",
+                        "text": "입력받은 냉장고 속 이미지에서 확실하게 보이는 식재료들만 리스트로 뽑아줘. 불필요한 설명은 제외. format example : ['계란','호박','사과']"
+                    },
+                    {
+                        "type": "image_url",
+                        "image_url": {
+                            "url": f"data:image/jpeg;base64,{base64_image}"
+                        }
+                    }
+                ]
+            }
+        ],
+        "max_tokens": 300
+    }
+
+    # Send the API request
+    response = requests.post("https://api.openai.com/v1/chat/completions", headers=headers, json=payload)
+    
+    # Extract and return the list of ingredients from the response
+    ingredients_list = response.json()['choices'][0]['message']['content']
+    return ingredients_list
 
 def generate_recipe_response(ingredients, health_condition=None, craving_food=None):
     if not health_condition:
