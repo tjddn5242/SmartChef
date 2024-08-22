@@ -195,70 +195,55 @@ st.markdown("<p style='text-align: center; color: #FF4500;'>냉장고에 있는 
 #         st.markdown("### 2. 인식된 재료들을 확인해보세요.")
 #         display_ingredients_grid(detected_ingredients)
 
-
-# Mock ingredient list for demonstration
+# 재료 리스트 초기화
 ingredients = ["감자", "달걀", "파프리카", "오이", "고추", "당근"]
 
-def display_ingredients(ingredients):
-    """Displays ingredients in a vertical list with remove buttons."""
-    for i, ingredient in enumerate(ingredients):
-        with st.container():
-            col1, col2 = st.columns([5, 1])
-            with col1:
-                st.write(ingredient)
-            with col2:
-                if st.button("❌", key=f"remove_{i}"):
-                    ingredients.pop(i)
-                    st.experimental_rerun()  # Rerun to refresh the UI after removing an ingredient
+# 재료 관리
+def manage_ingredients():
+    # 상태 초기화
+    if 'ingredients' not in st.session_state:
+        st.session_state.ingredients = ingredients
 
-st.write("Recognized Ingredients:")
-display_ingredients(ingredients)
+    # 재료 추가
+    def add_ingredient():
+        new_ingredient = st.session_state.new_ingredient
+        if new_ingredient and new_ingredient not in st.session_state.ingredients:
+            st.session_state.ingredients.append(new_ingredient)
+            st.session_state.new_ingredient = ''  # 입력창 초기화
 
-# Optionally, allow users to add ingredients manually
-with st.expander("원하는 식재료를 직접 추가해보세요!"):
-    new_ingredient = st.text_input("Enter ingredient name")
-    if st.button("추가"):
-        if new_ingredient:
-            ingredients.append(new_ingredient)
-            st.experimental_rerun()
+    # 재료 제거
+    def remove_ingredient(ingredient):
+        st.session_state.ingredients.remove(ingredient)
 
-# Adding some styling
-st.markdown(
-    """
-    <style>
-    .stButton>button {
-        background-color: #f5f5f5;
-        border: none;
-        border-radius: 5px;
-        padding: 5px 10px;
-        font-size: 16px;
-        cursor: pointer;
-    }
-    .stButton>button:hover {
-        background-color: #e0e0e0;
-    }
-    .stButton>button:focus {
-        outline: none;
-    }
-    .stTextInput>div>input {
-        padding: 10px;
-        border: 1px solid #ddd;
-        border-radius: 5px;
-        font-size: 16px;
-    }
-    .stExpander>div>div {
-        background-color: #333;
-        color: white;
-    }
-    .stExpander>div>div>div>div {
-        font-size: 16px;
-        padding: 10px;
-    }
-    </style>
-    """,
-    unsafe_allow_html=True
-)
+    # 5행 2열 매트릭스 구조로 나열
+    cols = st.columns(2)
+    for i, ingredient in enumerate(st.session_state.ingredients):
+        with cols[i % 2]:
+            # 알약 모양의 버튼과 제거 버튼
+            st.markdown(
+                f"""
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                    <span style="background-color: #e0e0e0; border-radius: 50px; padding: 10px 20px; font-size: 16px;">
+                        {ingredient}
+                    </span>
+                    <button onclick="document.getElementById('remove-{i}').click()" 
+                            style="background-color: transparent; border: none; color: red; font-size: 16px; cursor: pointer;">
+                        X
+                    </button>
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
+            if st.button("", key=f'remove-{i}', on_click=remove_ingredient, args=(ingredient,)):
+                st.experimental_rerun()
 
+    # 재료 추가 입력과 버튼
+    st.text_input('재료 추가:', key='new_ingredient')
+    st.button('추가하기', on_click=add_ingredient)
+
+if __name__ == '__main__':
+    st.title('재료 관리')
+    manage_ingredients()
 
 
     # with st.expander("각 재료 옆의 x버튼을 눌러 잘못 인식된 재료들을 삭제 할 수 있습니다.", expanded=True):
@@ -331,5 +316,5 @@ st.markdown(
     #                     for step in steps:
     #                         st.markdown(f"{step.strip()}")
 
-# else:
-#     st.warning("먼저 사진을 업로드 해주세요")
+else:
+    st.warning("먼저 사진을 업로드 해주세요")
