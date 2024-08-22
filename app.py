@@ -24,7 +24,7 @@ def recognize_ingredients_from_image(image):
     # Prepare the headers and payload for the API request
     headers = {
         "Content-Type": "application/json",
-        "Authorization": f"Bearer {api_key}"
+        "Authorization": f"Bearer {OPENAI_API_KEY}"
     }
 
     payload = {
