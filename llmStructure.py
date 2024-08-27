@@ -114,6 +114,6 @@ def gptOutput(user_need, ingredients, disease):
     #     if chunk.choices[0].delta.content is not None:
     #         return print(chunk.choices[0].delta.content, end="")
 
-    return response.choices[0].message.content
+    return (response.choices[0].message.content, prompt)
 
 
