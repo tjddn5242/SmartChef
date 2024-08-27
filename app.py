@@ -273,9 +273,9 @@ st.write(st.session_state.ingredients)
 st.write(health_condition)
 st.write(craving_food)
 
-user_need = '뜨끈한 해물이 포함된 국물이 있는 요리.'
-ingredients = '오징어| 새우| 어묵| 조개| 홍합| 고추가루'
-disease = '당뇨병'
+user_need = health_condition
+ingredients = st.session_state.ingredients
+disease = health_condition
 
-# st.write(user_need, ingredients, disease)
-# st.write(gptOutput(user_need, ingredients, disease))
+st.write(user_need, ingredients, disease)
+st.write(gptOutput(user_need, ingredients, disease))

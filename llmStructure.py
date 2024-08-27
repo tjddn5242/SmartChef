@@ -39,8 +39,10 @@ def gptOutput(user_need, ingredients, disease):
     recipe_request = request_query_recipe(f'{user_need}, Ingredient_Details: {ingredients}')
     recipes = [i['metadata']['text'] for i in recipe_request]
 
-    health_request = request_query_health(f'당뇨병')
+    health_request = request_query_health(disease)
     health = [i['metadata']['text'] for i in health_request]
+
+    print(health)
 
     prompt = f"""
     당신은 한식 요리사 겸 영양사입니다. 당신은 요리 초보자에게 요리 레시피 및 건강정보를 알려줘야합니다.
