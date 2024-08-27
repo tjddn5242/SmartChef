@@ -268,8 +268,10 @@ if img_file is not None:
 else:
     st.warning("먼저 사진을 업로드 해주세요")
 
-
+st.write('===')
 st.write(st.session_state.ingredients)
+st.write(health_condition)
+st.write(craving_food)
 
 user_need = '뜨끈한 해물이 포함된 국물이 있는 요리.'
 ingredients = '오징어| 새우| 어묵| 조개| 홍합| 고추가루'
