@@ -269,6 +269,8 @@ else:
     st.warning("먼저 사진을 업로드 해주세요")
 
 
+st.write(recipe)
+
 user_need = craving_food
 ingredients = st.session_state.ingredients
 disease = health_condition
