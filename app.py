@@ -269,9 +269,11 @@ else:
     st.warning("먼저 사진을 업로드 해주세요")
 
 
+st.write(st.session_state.ingredients)
+
 user_need = '뜨끈한 해물이 포함된 국물이 있는 요리.'
 ingredients = '오징어| 새우| 어묵| 조개| 홍합| 고추가루'
 disease = '당뇨병'
 
-st.write(user_need, ingredients, disease)
-st.write(gptOutput(user_need, ingredients, disease))
+# st.write(user_need, ingredients, disease)
+# st.write(gptOutput(user_need, ingredients, disease))
