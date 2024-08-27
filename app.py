@@ -273,9 +273,9 @@ st.write(st.session_state.ingredients)
 st.write(health_condition)
 st.write(craving_food)
 
-user_need = health_condition
+user_need = craving_food
 ingredients = st.session_state.ingredients
 disease = health_condition
-
-st.write(user_need, ingredients, disease)
-st.write(gptOutput(user_need, ingredients, disease))
+st.write(request_query_recipe(user_need))
+# st.write(user_need, ingredients, disease)
+# st.write(gptOutput(user_need, ingredients, disease))
