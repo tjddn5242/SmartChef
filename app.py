@@ -1,7 +1,7 @@
 import streamlit as st
 from PIL import Image
 import os
-from dotenv import load_dotenv
+# from dotenv import load_dotenv
 from openai import OpenAI
 import base64
 import requests
@@ -12,7 +12,7 @@ import time
 from llmStructure import *
 
 # .env 파일의 환경 변수들을 불러옵니다.
-load_dotenv()
+# load_dotenv()
 
 # OpenAI API Key 설정 (환경 변수 사용)
 OPENAI_API_KEY = st.secrets["OPENAI_API_KEY"]
