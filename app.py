@@ -268,15 +268,23 @@ if img_file is not None:
 else:
     st.warning("먼저 사진을 업로드 해주세요")
 
-st.write('===')
-st.write(st.session_state.ingredients)
-st.write(health_condition)
-st.write(craving_food)
 
 user_need = craving_food
 ingredients = st.session_state.ingredients
 disease = health_condition
 
-st.write(user_need, ingredients, disease)
+st.markdown(f'''
+### 변수
+- user_need: {user_need}
+- ingredients: {ingredients}
+- disease: {disease}
+---
+### 프롬프트
+{gptOutput(user_need, ingredients, disease)[1]}
+---
+### 모델output
+{gptOutput(user_need, ingredients, disease)[0]}
+''')
+
 st.write(gptOutput(user_need, ingredients, disease)[1])
 st.write(gptOutput(user_need, ingredients, disease)[0])
