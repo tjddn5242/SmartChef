@@ -285,6 +285,3 @@ st.markdown(f'''
 ### 모델output
 {gptOutput(user_need, ingredients, disease)[0]}
 ''')
-
-st.write(gptOutput(user_need, ingredients, disease)[1])
-st.write(gptOutput(user_need, ingredients, disease)[0])
