@@ -1,7 +1,7 @@
 import streamlit as st
 from PIL import Image
 import os
-from dotenv import load_dotenv
+# from dotenv import load_dotenv
 from openai import OpenAI
 import base64
 import requests
@@ -9,8 +9,10 @@ from io import BytesIO
 import ast
 import time
 
+from llmStructure import *
+
 # .env 파일의 환경 변수들을 불러옵니다.
-load_dotenv()
+# load_dotenv()
 
 # OpenAI API Key 설정 (환경 변수 사용)
 OPENAI_API_KEY = st.secrets["OPENAI_API_KEY"]
@@ -169,8 +171,8 @@ if img_file is not None:
 
     # 이미 인식된 재료가 없는 경우에만 이미지 인식 수행
     if 'ingredients' not in st.session_state or not st.session_state.ingredients:
-        detected_ingredients = recognize_ingredients_from_image(img)
-        # detected_ingredients = ["🥔감자", "🥚달걀", "🫑파프리카", "🥒오이", "🌶️고추", "🥕당근"] # 디버깅용 ===========================================================================
+        # detected_ingredients = recognize_ingredients_from_image(img)
+        detected_ingredients = ["🥔감자", "🥚달걀", "🫑파프리카", "🥒오이", "🌶️고추", "🥕당근"] # 디버깅용 ===========================================================================
         st.write("Recognized Ingredients:")
         st.write(detected_ingredients) # 디버깅용 ===========================================================================
         st.session_state.ingredients = list(set(detected_ingredients))
@@ -265,3 +267,11 @@ if img_file is not None:
 
 else:
     st.warning("먼저 사진을 업로드 해주세요")
+
+
+user_need = '뜨끈한 해물이 포함된 국물이 있는 요리.'
+ingredients = '오징어| 새우| 어묵| 조개| 홍합| 고추가루'
+disease = '당뇨병'
+
+st.write(user_need, ingredients, disease)
+st.write(gptOutput(user_need, ingredients, disease))
