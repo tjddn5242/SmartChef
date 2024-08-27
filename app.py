@@ -268,7 +268,7 @@ if img_file is not None:
 else:
     st.warning("먼저 사진을 업로드 해주세요")
 
-type(recipes)
+st.write(type(recipes))
 st.write(recipes)
 
 user_need = craving_food
