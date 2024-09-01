@@ -277,15 +277,15 @@ else:
 # ingredients = st.session_state.ingredients
 # disease = health_condition
 
-st.markdown(f'''
-### 변수
-- user_need: {user_need}
-- ingredients: {ingredients}
-- disease: {disease}
----
-### 프롬프트
-{gptOutput(user_need, ingredients, disease)[1]}
----
-### 모델output
-{gptOutput(user_need, ingredients, disease)[0]}
-''')
+# st.markdown(f'''
+# ### 변수
+# - user_need: {user_need}
+# - ingredients: {ingredients}
+# - disease: {disease}
+# ---
+# ### 프롬프트
+# {gptOutput(user_need, ingredients, disease)[1]}
+# ---
+# ### 모델output
+# {gptOutput(user_need, ingredients, disease)[0]}
+# ''')
