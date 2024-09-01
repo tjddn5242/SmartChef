@@ -169,53 +169,54 @@ if img_file is not None:
     craving_food = st.text_input("지금 땡기는 음식이 있다면 입력해주세요", placeholder="없다면 입력하지 않으셔도 됩니다")
 
     # Analyze 버튼
-    if st.button("음식을 추천해줘", help="Click to find recipes based on your ingredients and preferences"):
-        if st.session_state.ingredients:
+    if st.button("음식을 추천해줘", help="Click to find recipes based on your ingredients and preferences")
+        with st.spinner('음식을 추천하고 있어요...'):
+            if st.session_state.ingredients:
 
-            gpt_response = json.loads(gptOutput(craving_food, st.session_state.ingredients, health_condition)[0])
-            health_summary = gpt_response['chefTip']
-            recipes = gpt_response['recipes']
+                gpt_response = json.loads(gptOutput(craving_food, st.session_state.ingredients, health_condition)[0])
+                health_summary = gpt_response['chefTip']
+                recipes = gpt_response['recipes']
 
-            # print(gpt_response)
-            # print(health_summary)
-            # print(recipes)
+                # print(gpt_response)
+                # print(health_summary)
+                # print(recipes)
 
-            # 건강 요약 부분을 별도로 출력
-            if health_summary:
-                st.markdown("### 건강 요약")
-                st.markdown(f"**{health_summary}**")
-                st.markdown("---")  # 구분선을 추가하여 건강 요약과 레시피를 구분
+                # 건강 요약 부분을 별도로 출력
+                if health_summary:
+                    st.markdown("### 건강 요약")
+                    st.markdown(f"**{health_summary}**")
+                    st.markdown("---")  # 구분선을 추가하여 건강 요약과 레시피를 구분
 
-            st.markdown("### 추천 레시피")
+                st.markdown("### 추천 레시피")
 
-            cols = st.columns(3)  # 3개의 열로 카드 형식의 레이아웃 생성
+                cols = st.columns(3)  # 3개의 열로 카드 형식의 레이아웃 생성
 
-            for i, recipe in enumerate(recipes.values()):
-                with cols[i % 3]:
-                    st.markdown(f"<h3 style='color: #FF4500;'>{recipe['name']} {recipe['health_score']}</h3>", unsafe_allow_html=True)
-                    # st.image('https://oaidalleapiprodscus.blob.core.windows.net/private/org-tCAIJLieoZ5a5hHAL85SpD2O/user-oAmOYDR8Wvv7i718IYxSkOyy/img-DDzRwXOBZ09QPNBYWC1RXJ7N.png?st=2024-09-01T08%3A08%3A37Z&se=2024-09-01T10%3A08%3A37Z&sp=r&sv=2024-08-04&sr=b&rscd=inline&rsct=image/png&skoid=d505667d-d6c1-4a0a-bac7-5c84a87759f8&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2024-08-31T23%3A39%3A59Z&ske=2024-09-01T23%3A39%3A59Z&sks=b&skv=2024-08-04&sig=/Jhnj1DHBkkL/OJSpAzkAUpZ87AAoBKRseDT1qrDpEc%3D', caption='Your image caption', use_column_width=True)
-                    st.markdown(f"조리시간: {recipe['cooking_time']}")
-                    st.markdown(f"필요재료: {recipe['all_ingredients']}")
-                    st.markdown(f"추가구비재료: {recipe['additional_ingredients']}")
+                for i, recipe in enumerate(recipes.values()):
+                    with cols[i % 3]:
+                        st.markdown(f"<h3 style='color: #FF4500;'>{recipe['name']} {recipe['health_score']}</h3>", unsafe_allow_html=True)
+                        # st.image('https://oaidalleapiprodscus.blob.core.windows.net/private/org-tCAIJLieoZ5a5hHAL85SpD2O/user-oAmOYDR8Wvv7i718IYxSkOyy/img-DDzRwXOBZ09QPNBYWC1RXJ7N.png?st=2024-09-01T08%3A08%3A37Z&se=2024-09-01T10%3A08%3A37Z&sp=r&sv=2024-08-04&sr=b&rscd=inline&rsct=image/png&skoid=d505667d-d6c1-4a0a-bac7-5c84a87759f8&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2024-08-31T23%3A39%3A59Z&ske=2024-09-01T23%3A39%3A59Z&sks=b&skv=2024-08-04&sig=/Jhnj1DHBkkL/OJSpAzkAUpZ87AAoBKRseDT1qrDpEc%3D', caption='Your image caption', use_column_width=True)
+                        st.markdown(f"조리시간: {recipe['cooking_time']}")
+                        st.markdown(f"필요재료: {recipe['all_ingredients']}")
+                        st.markdown(f"추가구비재료: {recipe['additional_ingredients']}")
 
-                    input = {
-                        "prompt": f"Realistically, {recipe['english_name']}, and Korean style food, Only Food, tasty, dynamic shot"
-                    }
+                        input = {
+                            "prompt": f"Realistically, {recipe['english_name']}, and Korean style food, Only Food, tasty, dynamic shot"
+                        }
 
-                    output = replicate.run(
-                        "black-forest-labs/flux-schnell",
-                        input=input
-                    )
+                        output = replicate.run(
+                            "black-forest-labs/flux-schnell",
+                            input=input
+                        )
 
-                    # Expander 사용하여 준비 단계 표시
-                    with st.expander("조리방법보기"):
-                        st.markdown("#### 조리 방법")
-                        # 조리 단계에서 줄바꿈 적용하여 표시
-                        steps = recipe['steps'].split('\n')
-                        for step in steps:
-                            st.markdown(f"{step.strip()}")
+                        # Expander 사용하여 준비 단계 표시
+                        with st.expander("조리방법보기"):
+                            st.markdown("#### 조리 방법")
+                            # 조리 단계에서 줄바꿈 적용하여 표시
+                            steps = recipe['steps'].split('\n')
+                            for step in steps:
+                                st.markdown(f"{step.strip()}")
 
-                    st.image(output[0], output_format="JPEG")
+                        st.image(output[0], output_format="JPEG")
 
 else:
     st.warning("먼저 사진을 업로드 해주세요")
