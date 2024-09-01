@@ -78,7 +78,7 @@ def gptOutput(user_need, ingredients, disease):
     {health[2]}
 
     **중요: 아래와 같이 json형태로 출력하세요. 이외에는 그 어떤 말도 출력하지 마세요.**
-    {{"chefTip":"","recipes":{{"first":{{"name":"","additional_ingredients":"","all_ingredients":"", "steps":"","cooking_time":""}},"second":{{"name":"","additional_ingredients":"","all_ingredients":"","steps":"","cooking_time":""}},"third":{{"name":"","additional_ingredients":"","all_ingredients":"","steps":"","cooking_time":""}}}}}}
+    {{"chefTip":"","recipes":{{"first":{{"english_name":"", "name":"","additional_ingredients":"","all_ingredients":"", "steps":"","cooking_time":""}},"second":{{"english_name":"", "name":"","additional_ingredients":"","all_ingredients":"","steps":"","cooking_time":""}},"third":{{"english_name":"", "name":"","additional_ingredients":"","all_ingredients":"","steps":"","cooking_time":""}}}}}}
     """
 
     response = client.chat.completions.create(
