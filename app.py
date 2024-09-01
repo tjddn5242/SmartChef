@@ -8,7 +8,7 @@ import requests
 from io import BytesIO
 import ast
 import time
-
+import json
 from llmStructure import *
 
 # .env 파일의 환경 변수들을 불러옵니다.
@@ -233,12 +233,14 @@ if img_file is not None:
     # Analyze 버튼
     if st.button("음식을 추천해줘", help="Click to find recipes based on your ingredients and preferences"):
         if st.session_state.ingredients:
-            gpt_response = generate_recipe_response(st.session_state.ingredients, health_condition, craving_food)
-            health_summary, recipes = parse_recipes(gpt_response)
 
-            print(gpt_response)
-            print(health_summary)
-            print(recipes)
+            gpt_response = json.loads(gptOutput(craving_food, st.session_state.ingredients, health_condition)[0])
+            health_summary = gpt_response['chefTip']
+            recipes = gpt_response['recipes']
+
+            # print(gpt_response)
+            # print(health_summary)
+            # print(recipes)
 
             # 건강 요약 부분을 별도로 출력
             if health_summary:
@@ -250,7 +252,7 @@ if img_file is not None:
 
             cols = st.columns(3)  # 3개의 열로 카드 형식의 레이아웃 생성
 
-            for i, recipe in enumerate(recipes):
+            for i, recipe in enumerate(recipes.values()):
                 with cols[i % 3]:
                     st.markdown(f"<h3 style='color: #FF4500;'>{recipe['name']}</h3>", unsafe_allow_html=True)
                     st.markdown(f"조리시간: {recipe['cooking_time']}")
