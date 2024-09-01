@@ -35,7 +35,7 @@ def encode_image(image):
 
 
 def recognize_ingredients_from_image(image):
-    with st.spinner("🥕이미지에서 재료를 추출하고 있어요🥕"):
+    with st.spinner("🥕AI 쉐프가 재료를 확인하고 있어요!🥕"):
         time.sleep(2)  # 인코딩 작업 (모의)
         base64_image = encode_image(image)
         
@@ -170,7 +170,7 @@ if img_file is not None:
 
     # Analyze 버튼
     if st.button("음식을 추천해줘", help="Click to find recipes based on your ingredients and preferences"):
-        with st.spinner('🤖 음식을 추천하고 있어요... 🤖'):
+        with st.spinner('👨‍🍳AI 쉐프가 당신의 건강에 맞는 음식을 찾고 있어요!👨‍🍳'):
             if st.session_state.ingredients:
 
                 gpt_response = json.loads(gptOutput(craving_food, st.session_state.ingredients, health_condition)[0])
