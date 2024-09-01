@@ -35,7 +35,7 @@ def encode_image(image):
 
 
 def recognize_ingredients_from_image(image):
-    with st.spinner("Processing image..."):
+    with st.spinner("🥕이미지에서 재료를 추출하고 있어요🥕"):
         time.sleep(2)  # 인코딩 작업 (모의)
         base64_image = encode_image(image)
         
