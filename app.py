@@ -10,6 +10,10 @@ import ast
 import time
 import json
 from llmStructure import *
+import replicate
+
+# Image FLUX AI 
+REPLICATE_API_TOKEN = st.secrets['REPLICATE_API_TOKEN']
 
 # .env 파일의 환경 변수들을 불러옵니다.
 # load_dotenv()
@@ -277,6 +281,15 @@ if img_file is not None:
                     st.markdown(f"필요재료: {recipe['all_ingredients']}")
                     st.markdown(f"추가구비재료: {recipe['additional_ingredients']}")
 
+                    input = {
+                        "prompt": f"Realistically, {recipe['name']}, and Korean style food"
+                    }
+
+                    output = replicate.run(
+                        "black-forest-labs/flux-schnell",
+                        input=input
+                    )
+
                     # Expander 사용하여 준비 단계 표시
                     with st.expander("조리방법보기"):
                         st.markdown("#### 조리 방법")
@@ -284,6 +297,8 @@ if img_file is not None:
                         steps = recipe['steps'].split('\n')
                         for step in steps:
                             st.markdown(f"{step.strip()}")
+
+                    st.image(output[0], output_format="JPEG")
 
 else:
     st.warning("먼저 사진을 업로드 해주세요")
