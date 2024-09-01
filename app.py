@@ -270,12 +270,12 @@ if img_file is not None:
 else:
     st.warning("먼저 사진을 업로드 해주세요")
 
-st.write(type(recipes))
-st.write(recipes)
+# st.write(type(recipes))
+# st.write(recipes)
 
-user_need = craving_food
-ingredients = st.session_state.ingredients
-disease = health_condition
+# user_need = craving_food
+# ingredients = st.session_state.ingredients
+# disease = health_condition
 
 st.markdown(f'''
 ### 변수
