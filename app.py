@@ -199,7 +199,7 @@ if img_file is not None:
                     st.markdown(f"추가구비재료: {recipe['additional_ingredients']}")
 
                     input = {
-                        "prompt": f"Realistically, {recipe['english_name']}, and Korean style food"
+                        "prompt": f"Realistically, {recipe['english_name']}, and Korean style food, Only Food"
                     }
 
                     output = replicate.run(
