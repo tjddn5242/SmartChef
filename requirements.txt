@@ -4,7 +4,7 @@ pandas
 streamlit
 Pillow
 requests
-json
+# json
 # python-dotenv
 google-api-core==2.19.1
 google-api-python-client==2.142.0
