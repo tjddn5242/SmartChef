@@ -170,7 +170,7 @@ if img_file is not None:
 
     # Analyze 버튼
     if st.button("음식을 추천해줘", help="Click to find recipes based on your ingredients and preferences"):
-        with st.spinner('음식을 추천하고 있어요...'):
+        with st.spinner('🤖 음식을 추천하고 있어요... 🤖'):
             if st.session_state.ingredients:
 
                 gpt_response = json.loads(gptOutput(craving_food, st.session_state.ingredients, health_condition)[0])
