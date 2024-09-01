@@ -192,7 +192,7 @@ if img_file is not None:
 
             for i, recipe in enumerate(recipes.values()):
                 with cols[i % 3]:
-                    st.markdown(f"<h3 style='color: #FF4500;'>{recipe['name']} {recipe['english_name'] }</h3>", unsafe_allow_html=True)
+                    st.markdown(f"<h3 style='color: #FF4500;'>{recipe['name']} {recipe['health_score']}</h3>", unsafe_allow_html=True)
                     # st.image('https://oaidalleapiprodscus.blob.core.windows.net/private/org-tCAIJLieoZ5a5hHAL85SpD2O/user-oAmOYDR8Wvv7i718IYxSkOyy/img-DDzRwXOBZ09QPNBYWC1RXJ7N.png?st=2024-09-01T08%3A08%3A37Z&se=2024-09-01T10%3A08%3A37Z&sp=r&sv=2024-08-04&sr=b&rscd=inline&rsct=image/png&skoid=d505667d-d6c1-4a0a-bac7-5c84a87759f8&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2024-08-31T23%3A39%3A59Z&ske=2024-09-01T23%3A39%3A59Z&sks=b&skv=2024-08-04&sig=/Jhnj1DHBkkL/OJSpAzkAUpZ87AAoBKRseDT1qrDpEc%3D', caption='Your image caption', use_column_width=True)
                     st.markdown(f"조리시간: {recipe['cooking_time']}")
                     st.markdown(f"필요재료: {recipe['all_ingredients']}")
