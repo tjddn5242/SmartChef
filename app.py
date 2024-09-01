@@ -199,7 +199,8 @@ if img_file is not None:
                     st.markdown(f"추가구비재료: {recipe['additional_ingredients']}")
 
                     input = {
-                        "prompt": f"Realistically, {recipe['english_name']}, and Korean style food, Only Food"
+                        "prompt": f"{recipe['english_name']}, Realistically, spelling out the words \"{recipe['name']}\", Korean style food, Only Food, tasty, food photography, dynamic shot"
+                        # "black forest gateau cake spelling out the words \"FLUX SCHNELL\", tasty, food photography, dynamic shot"
                     }
 
                     output = replicate.run(
