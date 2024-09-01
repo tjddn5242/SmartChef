@@ -180,7 +180,6 @@ if img_file is not None:
         # Detected Ingredients Display (5 items per row)
         st.markdown("### 2. 인식된 재료들을 확인해보세요.")
 
-
     # Ensure the session state is set up correctly
     if 'ingredients' not in st.session_state:
         st.session_state.ingredients = ingredients
@@ -192,23 +191,31 @@ if img_file is not None:
         st.session_state.new_ingredients_list = []
 
     # 재료 삭제 기능
-    with st.expander("각 재료 옆의 x버튼을 눌러 잘못 인식된 재료들을 삭제 할 수 있습니다. 재료 추가/삭제가 완료되면 '변경 사항 확정하기' 눌러주세요", expanded=True):
+    with st.expander("각 재료 옆의 체크박스를 선택해 잘못 인식된 재료들을 삭제 할 수 있습니다.", expanded=True):
         if st.session_state.ingredients:
-            cols = st.columns(5)  # 한 번만 열을 생성합니다.
+            cols = st.columns(6)  # 한 번만 열을 생성합니다.
             for idx, ingredient in enumerate(st.session_state.ingredients):
-                col = cols[idx % 5]  # 현재 재료의 인덱스에 맞는 열을 선택합니다.
+                col = cols[idx % 6]  # 현재 재료의 인덱스에 맞는 열을 선택합니다.
                 with col:
-                    # 하나의 컨테이너에 ingredient와 X 버튼을 함께 담기
+                    # 하나의 컨테이너에 ingredient와 체크박스를 함께 담기
                     container = st.container(border=True)
                     with container:
-                        col1, col2 = st.columns([4, 1])
-                        col1.markdown(f"<p style='font-size:20px;'>{ingredient}</p>", unsafe_allow_html=True)
-                        if col2.button('X', key=f"remove_{ingredient}_{idx}"):
+                        col1, col2 = st.columns([6, 1])
+                        col1.markdown(f"<p style='font-size:20px; text-align:left;'>{ingredient}</p>", unsafe_allow_html=True)
+                        if col2.checkbox('', key=f"remove_{ingredient}_{idx}"):
                             if idx not in st.session_state.remove_indices:
                                 st.session_state.remove_indices.append(idx)
-                                st.toast(f"{ingredient}이(가) 삭제되었습니다.", icon="🗑️")
         else:
             st.markdown("<p style='font-size:16px;'>No ingredients detected yet. Please upload an image.</p>", unsafe_allow_html=True)
+    
+    # 삭제 버튼
+    if st.button("삭제 확정하기"):
+        # 삭제할 인덱스를 역순으로 정렬 후 pop으로 삭제하여 인덱스 오류 방지
+        for idx in sorted(st.session_state.remove_indices, reverse=True):
+            removed_ingredient = st.session_state.ingredients.pop(idx)
+            st.toast(f"{removed_ingredient} 이(가) 최종적으로 삭제되었습니다.", icon="🗑️")
+            time.sleep(1)
+            st.rerun()
 
     # 재료 추가 기능
     st.markdown("### 3. 인식하지 못한 재료들을 입력해서 추가해보세요.")
@@ -219,19 +226,14 @@ if img_file is not None:
             st.session_state.new_ingredients_list.extend(new_ingredients_list)
             st.session_state.new_ingredients_list = list(set(st.session_state.new_ingredients_list))
             st.toast(f"{', '.join(new_ingredients_list)} 재료(들)이가 추가되었습니다.", icon="✅")
+            time.sleep(1)
+            # st.rerun()
 
-    # 최종 확정 버튼
-    if st.button("변경 사항 확정하기"):
-        # 삭제할 인덱스를 역순으로 정렬 후 pop으로 삭제하여 인덱스 오류 방지
-        for idx in sorted(st.session_state.remove_indices, reverse=True):
-            removed_ingredient = st.session_state.ingredients.pop(idx)
-            st.toast(f"{removed_ingredient} 이(가) 최종적으로 삭제되었습니다.", icon="🗑️")
-        
- # 새로운 재료 추가
-        if st.session_state.new_ingredients_list:
-            st.session_state.ingredients.extend(st.session_state.new_ingredients_list)
-            st.session_state.ingredients = list(set(st.session_state.ingredients))
-            st.toast(f"다음 재료들이 최종적으로 추가되었습니다: {', '.join(st.session_state.new_ingredients_list)}", icon="✅")
+            # 새로운 재료 추가
+            if st.session_state.new_ingredients_list:
+                st.session_state.ingredients.extend(st.session_state.new_ingredients_list)
+                st.session_state.ingredients = list(set(st.session_state.ingredients))
+                st.rerun()
 
         # 변경 후 상태 초기화
         st.session_state.remove_indices.clear()
