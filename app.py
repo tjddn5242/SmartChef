@@ -1,6 +1,5 @@
 import streamlit as st
 import replicate
-from IPython.display import Image
 
 REPLICATE_API_TOKEN = st.secrets['REPLICATE_API_TOKEN']
 
