@@ -169,7 +169,7 @@ if img_file is not None:
     craving_food = st.text_input("지금 땡기는 음식이 있다면 입력해주세요", placeholder="없다면 입력하지 않으셔도 됩니다")
 
     # Analyze 버튼
-    if st.button("음식을 추천해줘", help="Click to find recipes based on your ingredients and preferences")
+    if st.button("음식을 추천해줘", help="Click to find recipes based on your ingredients and preferences"):
         with st.spinner('음식을 추천하고 있어요...'):
             if st.session_state.ingredients:
 
