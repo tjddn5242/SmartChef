@@ -65,6 +65,23 @@ def recognize_ingredients_from_image(image):
     st.success("Done!")
     return ingredients_list
 
+
+# 음성생성
+def generate_speech(voice, text, output_file_path):
+    client = OpenAI(api_key=OPENAI_API_KEY)
+    response = client.audio.speech.create(
+        model="tts-1-hd",
+        voice=voice,  # options: alloy, echo, fable, onyx, nova, shimmer
+        input=text
+    )
+
+    # Save the audio to a file
+    with open(output_file_path, 'wb') as audio_file:
+        response.stream_to_file(audio_file)
+
+    # Streamlit playback
+    st.audio(output_file_path)
+
 # Streamlit 앱 설정
 st.set_page_config(page_title="Smart Fridge Recipe Recommender", page_icon="🍽️", layout="wide")
 
@@ -197,6 +214,13 @@ if img_file is not None:
                     st.markdown("### 건강 요약")
                     st.markdown(f"**{health_summary}**")
                     st.markdown("---")  # 구분선을 추가하여 건강 요약과 레시피를 구분
+
+                    # Example usage
+                    # Assuming you have a client object already created
+                    voice = "nova"
+                    text = health_summary
+                    output_file_path = "output_speech.wav"
+                    generate_and_play_speech(voice, text, output_file_path)
 
                 st.markdown("### 추천 레시피")
 
