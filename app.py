@@ -67,7 +67,7 @@ def recognize_ingredients_from_image(image):
 
 
 # 음성생성
-def generate_and_play_speech(voice, text, output_file_path):
+def generate_and_play_speech(voice, text):
     client = OpenAI(api_key=OPENAI_API_KEY)
     response = client.audio.speech.create(
         model="tts-1-hd",
@@ -75,9 +75,14 @@ def generate_and_play_speech(voice, text, output_file_path):
         input=text
     )
 
+    # 현재 시간을 기반으로 고유한 파일 이름 생성
+    timestamp = datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
+    output_file_path = f"output_{timestamp}.wav"
+    # output_file_path = Path(__file__).parent / output_file_name
+
     # Save the audio to a file
-    with open(output_file_path, 'wb') as audio_file:
-        response.stream_to_file(audio_file)
+    # with open(output_file_path, 'wb') as audio_file:
+    response.stream_to_file(output_file_path)
 
     # Streamlit playback
     st.audio(output_file_path)
@@ -219,8 +224,7 @@ if img_file is not None:
                     # Assuming you have a client object already created
                     voice = "nova"
                     text = health_summary
-                    output_file_path = "output_speech.wav"
-                    generate_and_play_speech(voice, text, output_file_path)
+                    generate_and_play_speech(voice, text)
 
                 st.markdown("### 추천 레시피")
 
