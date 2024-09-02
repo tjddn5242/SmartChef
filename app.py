@@ -75,13 +75,7 @@ def generate_and_play_speech(voice, text):
         input=text
     )
 
-    # 현재 시간을 기반으로 고유한 파일 이름 생성
-    timestamp = datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
-    output_file_path = f"output_{timestamp}.wav"
-    # output_file_path = Path(__file__).parent / output_file_name
-
-    # Save the audio to a file
-    # with open(output_file_path, 'wb') as audio_file:
+    output_file_path = "output.wav"
     response.stream_to_file(output_file_path)
 
     # Streamlit playback
