@@ -50,7 +50,7 @@ def recognize_ingredients_from_image(image):
                 {
                     "role": "user",
                     "content": [
-                        {"type": "text", "text": "입력받은 냉장고 속 이미지에서 확실하게 보이는 식재료들만 리스트로 뽑아줘. 이때 식재료와 관련한 이모지를 같이 붙여줘. 불필요한 설명은 제외. format example : ['🥚계란','🎃호박','🍎사과']"},
+                        {"type": "text", "text": "입력받은 냉장고 속 이미지에서 확실하게 보이는 식재료들만 리스트로 뽑아줘. 이때 식재료와 관련한 이모지를 같이 붙여줘. 불필요한 설명은 제외. format example : ['🥚계란','🎃호박','🍎사과']. 인식된 재료가 없을 경우 빈 리스트를 반환해줘."},
                         {"type": "image_url", "image_url": {"url": f"data:image/jpeg;base64,{base64_image}"}}
                     ]
                 }
