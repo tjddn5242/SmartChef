@@ -193,7 +193,7 @@ if img_file is not None:
     # 사용자 건강 상태와 땡기는 음식 입력 받기
     st.markdown("### 4. 가지고 있는 질병과 현재 땡기는 음식을 말씀해주세요.")
     health_condition = st.text_input("가지고 있는 질병이 있다면 입력해주세요 (ex. 당뇨병, 야맹증, 고혈압 등)", placeholder="필수로 입력해주세요")
-    craving_food = st.text_input("지금 땡기는 음식이 있다면 입력해주세요 (ex.한식/중식/양식, 매운음식, 느끼한음식 등)", placeholder="없다면 입력하지 않으셔도 됩니다")
+    craving_food = st.text_input("지금 땡기는 음식이 있다면 입력해주세요 (ex.한식/태국음식.., 매운음식, 느끼한음식 등)", placeholder="없다면 입력하지 않으셔도 됩니다")
 
     # Analyze 버튼
     if st.button("음식을 추천해줘", help="Click to find recipes based on your ingredients and preferences"):
