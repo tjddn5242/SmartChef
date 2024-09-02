@@ -77,6 +77,10 @@ st.markdown("### 1. 냉장고 사진을 업로드 해주세요")
 img_file = st.file_uploader("", type=["jpg", "jpeg", "png"])
 # img_file = 'uploaded_image.jpg' # 디버깅용 ===========================================================================
 
+# 카메라 장치 선택
+camera_options = ["카메라 1", "카메라 2", "카메라 3"]  # 실제 장치 이름은 다를 수 있습니다.
+selected_camera = st.selectbox("사용할 카메라를 선택하세요:", camera_options)
+
 st.markdown("### 1. 냉장고 사진을 찍어주세요")
 
 # 카메라 입력을 통해 이미지 캡처
