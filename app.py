@@ -67,7 +67,7 @@ def recognize_ingredients_from_image(image):
 
 
 # 음성생성
-def generate_speech(voice, text, output_file_path):
+def generate_and_play_speech(voice, text, output_file_path):
     client = OpenAI(api_key=OPENAI_API_KEY)
     response = client.audio.speech.create(
         model="tts-1-hd",
