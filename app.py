@@ -139,7 +139,7 @@ if img_file is not None:
         st.session_state.new_ingredients_list = []
 
     # 재료 삭제 기능
-    with st.expander("각 재료 옆의 체크박스를 선택해 잘못 인식된 재료들을 삭제 할 수 있습니다.", expanded=True):
+    with st.expander("각 재료 옆의 체크박스를 선택하고 삭제 확정하기 버튼을 눌러 잘못 인식된 재료들을 삭제 할 수 있습니다.", expanded=True):
         if st.session_state.ingredients:
             cols = st.columns(6)  # 한 번만 열을 생성합니다.
             for idx, ingredient in enumerate(st.session_state.ingredients):
@@ -210,7 +210,7 @@ if img_file is not None:
 
                 # 건강 요약 부분을 별도로 출력
                 if health_summary:
-                    st.markdown("### 건강 요약")
+                    st.markdown("### AI 영양사 한마디")
                     st.markdown(f"**{health_summary}**")
                     st.markdown("---")  # 구분선을 추가하여 건강 요약과 레시피를 구분
 
