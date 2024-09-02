@@ -62,7 +62,7 @@ def recognize_ingredients_from_image(image):
         ingredients_list = response.json()['choices'][0]['message']['content']
         ingredients_list = ast.literal_eval(ingredients_list)
         
-    st.success("Done!")
+    st.success("냉장고 재료 인식이 끝났습니다!")
     return ingredients_list
 
 
