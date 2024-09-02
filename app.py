@@ -73,18 +73,12 @@ st.markdown("<h1 style='text-align: center; color: #FF6347;'>스마트쉐프</h1
 st.markdown("<p style='text-align: center; color: #FF4500;'>냉장고에 있는 재료로 최고의 음식을 만들어드립니다</p>", unsafe_allow_html=True)
 
 # 이미지 업로드 기능
-st.markdown("### 1. 냉장고 사진을 업로드 해주세요")
+st.markdown("### 1. 냉장고 사진을 업로드 혹은 직접 촬영 해주세요")
 img_file = st.file_uploader("", type=["jpg", "jpeg", "png"])
 # img_file = 'uploaded_image.jpg' # 디버깅용 ===========================================================================
 
-# 카메라 장치 선택
-camera_options = ["카메라 1", "카메라 2", "카메라 3"]  # 실제 장치 이름은 다를 수 있습니다.
-selected_camera = st.selectbox("사용할 카메라를 선택하세요:", camera_options)
-
-st.markdown("### 1. 냉장고 사진을 찍어주세요")
-
-# 카메라 입력을 통해 이미지 캡처
-img_file = st.camera_input("사진을 찍어주세요")
+# 사이드바에 카메라 입력을 통해 이미지 캡처
+img_file = st.sidebar.camera_input("사진을 찍어주세요")
 
 # 사진이 삭제되었는지 확인 (img_file이 None인 경우)
 if img_file is None:
