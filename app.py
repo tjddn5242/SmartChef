@@ -96,7 +96,7 @@ option = st.selectbox("이미지 입력 방식을 선택하세요:", ('파일 �
 img_file = None
 
 if option == '파일 업로드':
-    img_file = st.file_uploader("이미지 파일을 업로드하세요", type=["jpg", "jpeg", "png"])
+    img_file = st.file_uploader("찍어놓은 냉장고 내부 사진을 업로드하세요", type=["jpg", "jpeg", "png"])
 elif option == '사진 촬영':
     img_file = st.camera_input("사진을 찍어주세요")
 
