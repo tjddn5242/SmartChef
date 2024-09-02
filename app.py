@@ -82,19 +82,6 @@ st.markdown("### 1. 냉장고 사진을 찍어주세요")
 # 카메라 입력을 통해 이미지 캡처
 img_file = st.camera_input("사진을 찍어주세요")
 
-if img_file is not None:
-    # 이미지를 PIL 이미지로 읽기
-    img = Image.open(img_file)
-
-    # PIL 이미지를 numpy 배열로 변환
-    img_array = np.array(img)
-
-    # img_array의 타입 확인
-    st.write(type(img_array))
-
-    # img_array의 shape 확인
-    st.write(img_array.shape)
-
 # 사진이 삭제되었는지 확인 (img_file이 None인 경우)
 if img_file is None:
     if 'ingredients' in st.session_state:
