@@ -17,7 +17,7 @@ def request_query_recipe(query):
     )
 
     embedded_query=response.data[0].embedding
-    results=index.query(embedded_query, top_k=7, include_metadata=True)
+    results=index.query(embedded_query, top_k=5, include_metadata=True)
 
     return results['matches']
 
@@ -75,11 +75,6 @@ def gptOutput(user_need, ingredients, disease):
     [레시피5]
     {recipes[4]}
 
-    [레시피6]
-    {recipes[5]}
-
-    [레시피7]
-    {recipes[6]}
 
     [몸상태(질병) 정보]
     {disease}
