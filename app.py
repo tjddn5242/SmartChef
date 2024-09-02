@@ -11,6 +11,7 @@ import time
 import json
 from llmStructure import *
 import replicate
+import numpy as np
 
 # Image FLUX AI 
 REPLICATE_API_TOKEN = st.secrets['REPLICATE_API_TOKEN']
@@ -75,6 +76,24 @@ st.markdown("<p style='text-align: center; color: #FF4500;'>냉장고에 있는 
 st.markdown("### 1. 냉장고 사진을 업로드 해주세요")
 img_file = st.file_uploader("", type=["jpg", "jpeg", "png"])
 # img_file = 'uploaded_image.jpg' # 디버깅용 ===========================================================================
+
+st.markdown("### 1. 냉장고 사진을 찍어주세요")
+
+# 카메라 입력을 통해 이미지 캡처
+img_file = st.camera_input("사진을 찍어주세요")
+
+if img_file is not None:
+    # 이미지를 PIL 이미지로 읽기
+    img = Image.open(img_file)
+
+    # PIL 이미지를 numpy 배열로 변환
+    img_array = np.array(img)
+
+    # img_array의 타입 확인
+    st.write(type(img_array))
+
+    # img_array의 shape 확인
+    st.write(img_array.shape)
 
 # 사진이 삭제되었는지 확인 (img_file이 None인 경우)
 if img_file is None:
