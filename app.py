@@ -10,6 +10,11 @@ import ast
 import time
 import json
 from llmStructure import *
+import replicate
+import numpy as np
+
+# Image FLUX AI 
+REPLICATE_API_TOKEN = st.secrets['REPLICATE_API_TOKEN']
 
 # .env 파일의 환경 변수들을 불러옵니다.
 # load_dotenv()
@@ -31,7 +36,7 @@ def encode_image(image):
 
 
 def recognize_ingredients_from_image(image):
-    with st.spinner("Processing image..."):
+    with st.spinner("🥕AI 쉐프가 재료를 확인하고 있어요!🥕"):
         time.sleep(2)  # 인코딩 작업 (모의)
         base64_image = encode_image(image)
         
@@ -45,7 +50,7 @@ def recognize_ingredients_from_image(image):
                 {
                     "role": "user",
                     "content": [
-                        {"type": "text", "text": "입력받은 냉장고 속 이미지에서 확실하게 보이는 식재료들만 리스트로 뽑아줘. 이때 식재료와 관련한 이모지를 같이 붙여줘. 불필요한 설명은 제외. format example : ['🥚계란','🎃호박','🍎사과']"},
+                        {"type": "text", "text": "입력받은 냉장고 속 이미지에서 확실하게 보이는 식재료들만 리스트로 뽑아줘. 이때 식재료와 관련한 이모지를 같이 붙여줘. 불필요한 설명은 제외. format example : ['🥚계란','🎃호박','🍎사과']. 인식된 재료가 없을 경우 빈 리스트를 반환해줘."},
                         {"type": "image_url", "image_url": {"url": f"data:image/jpeg;base64,{base64_image}"}}
                     ]
                 }
@@ -60,88 +65,21 @@ def recognize_ingredients_from_image(image):
     st.success("Done!")
     return ingredients_list
 
-def generate_recipe_response(ingredients, health_condition=None, craving_food=None):
-    if not health_condition:
-        health_condition = "없음"
-    if not craving_food:
-        craving_food = "없음"
 
-    prompt = (
-        f"""다음 재료들이 있습니다: {', '.join(ingredients)}.
-        제 건강 상태는 {health_condition}이고, 현재 {craving_food}을(를) 먹고 싶습니다. 
-        이 재료들을 사용하여 만들 수 있는 다양한 요리 레시피를 3개이상 추천해 주세요.
-
-        그리고, 건강상태에 따른 음식 섭취방법이나 주의해야할 재료같은 것도 짧게 한줄로 요약해서 말해줘.
-        
-        **중요: 아래 형식에 맞추어 정확히 답변해 주세요. 추가 정보나 텍스트는 추가하지 마세요. 준수할 수 없다면 'N/A'라고 출력해 주세요.**
-
-        <output format>
-        건강 요약:
-        요리 이름:
-        조리 시간:
-        필요재료:
-        추가로 구비해야 하는 재료:
-        요리 단계:
-        """
+# 음성생성
+def generate_and_play_speech(voice, text):
+    client = OpenAI(api_key=OPENAI_API_KEY)
+    response = client.audio.speech.create(
+        model="tts-1-hd",
+        voice=voice,  # options: alloy, echo, fable, onyx, nova, shimmer
+        input=text
     )
 
-    with st.spinner("Generating recipe..."):
-        client = OpenAI()
-        response = client.chat.completions.create(
-        model="gpt-4o-mini",
-         messages=[
-                {"role": "system", "content": "You are a creative and helpful chef"},
-                {"role": "user", "content": prompt}
-            ]
-        )
+    output_file_path = "output.wav"
+    response.stream_to_file(output_file_path)
 
-    return response.choices[0].message.content
-
-def parse_recipes(gpt_response):
-    lines = gpt_response.splitlines()  # 응답을 줄 단위로 나누기
-    
-    health_summary = None
-    recipes = []
-    current_recipe = {}
-    parsing_steps = False
-    
-    for line in lines:
-        line = line.strip()  # 앞뒤 공백 제거
-        
-        if line.startswith("건강 요약:"):
-            health_summary = line.replace("건강 요약:", "").strip()
-        elif line.startswith("요리 이름:"):
-            if current_recipe:
-                # 마지막으로 파싱된 레시피를 리스트에 추가
-                recipes.append(current_recipe)
-                current_recipe = {}  # 새로운 레시피 시작을 위해 초기화
-            current_recipe["name"] = line.replace("요리 이름:", "").strip()
-            parsing_steps = False
-        elif line.startswith("조리 시간:"):
-            current_recipe["cooking_time"] = line.replace("조리 시간:", "").strip()
-        elif line.startswith("필요재료:"):
-            current_recipe["all_ingredients"] = line.replace("필요재료:", "").strip()
-        elif line.startswith("추가로 구비해야 하는 재료:"):
-            current_recipe["additional_ingredients"] = line.replace("추가로 구비해야 하는 재료:", "").strip()
-        elif line.startswith("요리 단계:"):
-            parsing_steps = True
-            current_recipe["steps"] = []
-        elif parsing_steps:
-            # 요리 단계가 여러 줄에 걸쳐 있을 수 있으므로 리스트로 저장
-            current_recipe["steps"].append(line)
-    
-    # 마지막 레시피 추가
-    if current_recipe:
-        recipes.append(current_recipe)
-    
-    # "알 수 없음"으로 표시된 항목들에 대한 기본 처리
-    for recipe in recipes:
-        recipe["cooking_time"] = recipe.get("cooking_time", "알 수 없음")
-        recipe["all_ingredients"] = recipe.get("all_ingredients", "알 수 없음")
-        recipe["additional_ingredients"] = recipe.get("additional_ingredients", "없음").replace("N/A", "없음")
-        recipe["steps"] = "\n".join(recipe.get("steps", []))
-
-    return health_summary, recipes
+    # Streamlit playback
+    st.audio(output_file_path)
 
 # Streamlit 앱 설정
 st.set_page_config(page_title="Smart Fridge Recipe Recommender", page_icon="🍽️", layout="wide")
@@ -151,9 +89,19 @@ st.markdown("<h1 style='text-align: center; color: #FF6347;'>스마트쉐프</h1
 st.markdown("<p style='text-align: center; color: #FF4500;'>냉장고에 있는 재료로 최고의 음식을 만들어드립니다</p>", unsafe_allow_html=True)
 
 # 이미지 업로드 기능
-st.markdown("### 1. 냉장고 사진을 업로드 해주세요")
-img_file = st.file_uploader("", type=["jpg", "jpeg", "png"])
-# img_file = 'uploaded_image.jpg' # 디버깅용 ===========================================================================
+st.markdown("### 1. 냉장고 사진을 업로드 혹은 직접 촬영 해주세요")
+# 사용자가 선택할 수 있는 드롭다운 메뉴 제공
+option = st.selectbox("이미지 입력 방식을 선택하세요:", ('파일 업로드', '사진 촬영'))
+
+img_file = None
+
+if option == '파일 업로드':
+    img_file = st.file_uploader("이미지 파일을 업로드하세요", type=["jpg", "jpeg", "png"])
+elif option == '사진 촬영':
+    img_file = st.camera_input("사진을 찍어주세요")
+
+# if img_file is not None:
+#     st.image(img_file, caption='선택된 이미지')
 
 # 사진이 삭제되었는지 확인 (img_file이 None인 경우)
 if img_file is None:
@@ -249,41 +197,59 @@ if img_file is not None:
 
     # Analyze 버튼
     if st.button("음식을 추천해줘", help="Click to find recipes based on your ingredients and preferences"):
-        if st.session_state.ingredients:
+        with st.spinner('👨‍🍳AI 쉐프가 당신의 건강에 맞는 음식을 찾고 있어요!👨‍🍳'):
+            if st.session_state.ingredients:
 
-            gpt_response = json.loads(gptOutput(craving_food, st.session_state.ingredients, health_condition)[0])
-            health_summary = gpt_response['chefTip']
-            recipes = gpt_response['recipes']
+                gpt_response = json.loads(gptOutput(craving_food, st.session_state.ingredients, health_condition)[0])
+                health_summary = gpt_response['chefTip']
+                recipes = gpt_response['recipes']
 
-            # print(gpt_response)
-            # print(health_summary)
-            # print(recipes)
+                # print(gpt_response)
+                # print(health_summary)
+                # print(recipes)
 
-            # 건강 요약 부분을 별도로 출력
-            if health_summary:
-                st.markdown("### 건강 요약")
-                st.markdown(f"**{health_summary}**")
-                st.markdown("---")  # 구분선을 추가하여 건강 요약과 레시피를 구분
+                # 건강 요약 부분을 별도로 출력
+                if health_summary:
+                    st.markdown("### 건강 요약")
+                    st.markdown(f"**{health_summary}**")
+                    st.markdown("---")  # 구분선을 추가하여 건강 요약과 레시피를 구분
 
-            st.markdown("### 추천 레시피")
+                    # Example usage
+                    # Assuming you have a client object already created
+                    voice = "nova"
+                    text = health_summary
+                    generate_and_play_speech(voice, text)
 
-            cols = st.columns(3)  # 3개의 열로 카드 형식의 레이아웃 생성
+                st.markdown("### 추천 레시피")
 
-            for i, recipe in enumerate(recipes.values()):
-                with cols[i % 3]:
-                    st.markdown(f"<h3 style='color: #FF4500;'>{recipe['name']}</h3>", unsafe_allow_html=True)
-                    # st.image('https://oaidalleapiprodscus.blob.core.windows.net/private/org-tCAIJLieoZ5a5hHAL85SpD2O/user-oAmOYDR8Wvv7i718IYxSkOyy/img-DDzRwXOBZ09QPNBYWC1RXJ7N.png?st=2024-09-01T08%3A08%3A37Z&se=2024-09-01T10%3A08%3A37Z&sp=r&sv=2024-08-04&sr=b&rscd=inline&rsct=image/png&skoid=d505667d-d6c1-4a0a-bac7-5c84a87759f8&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2024-08-31T23%3A39%3A59Z&ske=2024-09-01T23%3A39%3A59Z&sks=b&skv=2024-08-04&sig=/Jhnj1DHBkkL/OJSpAzkAUpZ87AAoBKRseDT1qrDpEc%3D', caption='Your image caption', use_column_width=True)
-                    st.markdown(f"조리시간: {recipe['cooking_time']}")
-                    st.markdown(f"필요재료: {recipe['all_ingredients']}")
-                    st.markdown(f"추가구비재료: {recipe['additional_ingredients']}")
+                cols = st.columns(3)  # 3개의 열로 카드 형식의 레이아웃 생성
 
-                    # Expander 사용하여 준비 단계 표시
-                    with st.expander("조리방법보기"):
-                        st.markdown("#### 조리 방법")
-                        # 조리 단계에서 줄바꿈 적용하여 표시
-                        steps = recipe['steps'].split('\n')
-                        for step in steps:
-                            st.markdown(f"{step.strip()}")
+                for i, recipe in enumerate(recipes.values()):
+                    with cols[i % 3]:
+                        st.markdown(f"<h3 style='color: #FF4500;'>{recipe['name']} {recipe['health_score']}</h3>", unsafe_allow_html=True)
+                        # st.image('https://oaidalleapiprodscus.blob.core.windows.net/private/org-tCAIJLieoZ5a5hHAL85SpD2O/user-oAmOYDR8Wvv7i718IYxSkOyy/img-DDzRwXOBZ09QPNBYWC1RXJ7N.png?st=2024-09-01T08%3A08%3A37Z&se=2024-09-01T10%3A08%3A37Z&sp=r&sv=2024-08-04&sr=b&rscd=inline&rsct=image/png&skoid=d505667d-d6c1-4a0a-bac7-5c84a87759f8&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2024-08-31T23%3A39%3A59Z&ske=2024-09-01T23%3A39%3A59Z&sks=b&skv=2024-08-04&sig=/Jhnj1DHBkkL/OJSpAzkAUpZ87AAoBKRseDT1qrDpEc%3D', caption='Your image caption', use_column_width=True)
+                        st.markdown(f"조리시간: {recipe['cooking_time']}")
+                        st.markdown(f"필요재료: {recipe['all_ingredients']}")
+                        st.markdown(f"추가구비재료: {recipe['additional_ingredients']}")
+
+                        input = {
+                            "prompt": f"Realistically, {recipe['english_name']}, and Korean style food, Only Food, tasty, dynamic shot"
+                        }
+
+                        output = replicate.run(
+                            "black-forest-labs/flux-schnell",
+                            input=input
+                        )
+
+                        # Expander 사용하여 준비 단계 표시
+                        with st.expander("조리방법보기"):
+                            st.markdown("#### 조리 방법")
+                            # 조리 단계에서 줄바꿈 적용하여 표시
+                            steps = recipe['steps'].split('\n')
+                            for step in steps:
+                                st.markdown(f"{step.strip()}")
+
+                        st.image(output[0], output_format="JPEG")
 
 else:
     st.warning("먼저 사진을 업로드 해주세요")
