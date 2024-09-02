@@ -74,11 +74,18 @@ st.markdown("<p style='text-align: center; color: #FF4500;'>냉장고에 있는 
 
 # 이미지 업로드 기능
 st.markdown("### 1. 냉장고 사진을 업로드 혹은 직접 촬영 해주세요")
-img_file = st.file_uploader("", type=["jpg", "jpeg", "png"])
-# img_file = 'uploaded_image.jpg' # 디버깅용 ===========================================================================
+# 사용자가 선택할 수 있는 드롭다운 메뉴 제공
+option = st.selectbox("이미지 입력 방식을 선택하세요:", ('파일 업로드', '사진 촬영'))
 
-# 카메라 입력을 통해 이미지 캡처
-img_file = st.camera_input("사진을 찍어주세요")
+img_file = None
+
+if option == '파일 업로드':
+    img_file = st.file_uploader("이미지 파일을 업로드하세요", type=["jpg", "jpeg", "png"])
+elif option == '사진 촬영':
+    img_file = st.camera_input("사진을 찍어주세요")
+
+# if img_file is not None:
+#     st.image(img_file, caption='선택된 이미지')
 
 # 사진이 삭제되었는지 확인 (img_file이 None인 경우)
 if img_file is None:
