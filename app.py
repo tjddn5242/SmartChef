@@ -77,8 +77,8 @@ st.markdown("### 1. 냉장고 사진을 업로드 혹은 직접 촬영 해주세
 img_file = st.file_uploader("", type=["jpg", "jpeg", "png"])
 # img_file = 'uploaded_image.jpg' # 디버깅용 ===========================================================================
 
-# 사이드바에 카메라 입력을 통해 이미지 캡처
-img_file = st.sidebar.camera_input("사진을 찍어주세요")
+# 카메라 입력을 통해 이미지 캡처
+img_file = st.camera_input("사진을 찍어주세요")
 
 # 사진이 삭제되었는지 확인 (img_file이 None인 경우)
 if img_file is None:
