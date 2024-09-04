@@ -93,10 +93,6 @@ st.markdown("### 1. 냉장고 사진을 업로드 혹은 직접 촬영 해주세
 
 img_file = None
 
-# 버튼 클릭 시 이미지 선택 상태 초기화
-if "img_file" not in st.session_state:
-    st.session_state.img_file = None
-
 # 데모 이미지를 불러오는 버튼을 같은 행에 좁게 배치
 col1, col2, col3, col4, col5, col6, col7 = st.columns([1, 1, 1, 1, 1, 1, 1])
 
