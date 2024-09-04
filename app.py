@@ -85,7 +85,7 @@ def generate_and_play_speech(voice, text):
 st.set_page_config(page_title="Smart Fridge Recipe Recommender", page_icon="🍽️", layout="wide")
 
 # 제목과 스타일링
-st.markdown("<h1 style='text-align: center; color: #FF6347;'>스마트쉐프</h1>", unsafe_allow_html=True)
+st.markdown("<h1 style='text-align: center; color: #FF6347;'>🧑‍🍳스마트쉐프</h1>", unsafe_allow_html=True)
 st.markdown("<p style='text-align: center; color: #FF4500;'>냉장고에 있는 재료로 최고의 음식을 만들어드립니다</p>", unsafe_allow_html=True)
 
 # 이미지 업로드 기능
