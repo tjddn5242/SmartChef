@@ -95,6 +95,14 @@ option = st.selectbox("이미지 입력 방식을 선택하세요:", ('파일 �
 
 img_file = None
 
+# 데모 이미지를 불러오는 버튼
+if st.button("Demo Image 1"):
+    img_file = Image.open('image/demo1.jpg')
+
+if st.button("Demo Image 2"):
+    img_file = Image.open('image/demo2.jpg')
+
+# 업로드 혹은 촬영 택1
 if option == '파일 업로드':
     img_file = st.file_uploader("찍어놓은 냉장고 내부 사진을 업로드하세요", type=["jpg", "jpeg", "png"])
 elif option == '사진 촬영':
