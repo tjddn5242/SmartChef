@@ -93,6 +93,10 @@ st.markdown("### 1. 냉장고 사진을 업로드 혹은 직접 촬영 해주세
 
 img_file = None
 
+# 버튼 클릭 시 이미지 선택 상태 초기화
+if "img_file" not in st.session_state:
+    st.session_state.img_file = None
+
 # 데모 이미지를 불러오는 버튼을 같은 행에 좁게 배치
 col1, col2, col3, col4, col5, col6, col7 = st.columns([1, 1, 1, 1, 1, 1, 1])
 
@@ -113,9 +117,6 @@ if img_file is None:
         img_file = st.file_uploader("찍어놓은 냉장고 내부 사진을 업로드하세요", type=["jpg", "jpeg", "png"])
     elif option == '사진 촬영':
         img_file = st.camera_input("사진을 찍어주세요")
-
-# if img_file is not None:
-#     st.image(img_file, caption='선택된 이미지')
 
 # 사진이 삭제되었는지 확인 (img_file이 None인 경우)
 if img_file is None:
