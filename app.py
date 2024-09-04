@@ -97,8 +97,8 @@ img_file = None
 # col1, col2, col3, col4, col5, col6, col7 = st.columns([1, 1, 1, 1, 1, 1, 1])
 
 # with col1:
-#     if st.button("Demo Image 1"):
-#         img_file = 'image/demo1.jpg'
+if st.button("Demo Image"):
+    img_file = 'image/demo1.jpg'
 
 # with col2:
 #     if st.button("Demo Image 2"):
