@@ -98,15 +98,15 @@ img_file = None
 # 데모 이미지를 불러오는 버튼
 if st.button("Demo Image 1"):
     img_file = Image.open('image/demo1.jpg')
-
-if st.button("Demo Image 2"):
+elif st.button("Demo Image 2"):
     img_file = Image.open('image/demo2.jpg')
 
-# 업로드 혹은 촬영 택1
-if option == '파일 업로드':
-    img_file = st.file_uploader("찍어놓은 냉장고 내부 사진을 업로드하세요", type=["jpg", "jpeg", "png"])
-elif option == '사진 촬영':
-    img_file = st.camera_input("사진을 찍어주세요")
+# 데모 이미지가 선택되지 않은 경우에만 파일 업로드 및 사진 촬영 기능 활성화
+if img_file is None:
+    if option == '파일 업로드':
+        img_file = st.file_uploader("찍어놓은 냉장고 내부 사진을 업로드하세요", type=["jpg", "jpeg", "png"])
+    elif option == '사진 촬영':
+        img_file = st.camera_input("사진을 찍어주세요")
 
 # if img_file is not None:
 #     st.image(img_file, caption='선택된 이미지')
