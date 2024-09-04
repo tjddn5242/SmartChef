@@ -98,11 +98,11 @@ col1, col2, col3, col4, col5, col6, col7 = st.columns([1, 1, 1, 1, 1, 1, 1])
 
 with col1:
     if st.button("Demo Image 1"):
-        img_file = Image.open('image/demo1.jpg')
+        img_file = 'image/demo1.jpg'
 
 with col2:
     if st.button("Demo Image 2"):
-        img_file = Image.open('image/demo2.jpg')
+        img_file = 'image/demo2.jpg'
     
 # 사용자가 선택할 수 있는 드롭다운 메뉴 제공
 option = st.selectbox("이미지 입력 방식을 선택하세요:", ('파일 업로드', '사진 촬영'))
