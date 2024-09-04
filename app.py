@@ -100,7 +100,7 @@ with col1:
     if st.button("Demo Image 1"):
         img_file = Image.open('image/demo1.jpg')
 
-with col3:
+with col2:
     if st.button("Demo Image 2"):
         img_file = Image.open('image/demo2.jpg')
     
