@@ -93,14 +93,14 @@ st.markdown("### 1. 냉장고 사진을 업로드 혹은 직접 촬영 해주세
 
 img_file = None
 
-# 데모 이미지를 불러오는 버튼을 같은 행에 배치
-col1, col2 = st.columns(2)
+# 데모 이미지를 불러오는 버튼을 같은 행에 좁게 배치
+col1, col2, col3 = st.columns([1, 0.1, 1])
 
 with col1:
     if st.button("Demo Image 1"):
         img_file = Image.open('image/demo1.jpg')
 
-with col2:
+with col3:
     if st.button("Demo Image 2"):
         img_file = Image.open('image/demo2.jpg')
     
