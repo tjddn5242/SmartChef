@@ -90,16 +90,22 @@ st.markdown("<p style='text-align: center; color: #FF4500;'>냉장고에 있는 
 
 # 이미지 업로드 기능
 st.markdown("### 1. 냉장고 사진을 업로드 혹은 직접 촬영 해주세요")
-# 사용자가 선택할 수 있는 드롭다운 메뉴 제공
-option = st.selectbox("이미지 입력 방식을 선택하세요:", ('파일 업로드', '사진 촬영'))
 
 img_file = None
 
-# 데모 이미지를 불러오는 버튼
-if st.button("Demo Image 1"):
-    img_file = Image.open('image/demo1.jpg')
-elif st.button("Demo Image 2"):
-    img_file = Image.open('image/demo2.jpg')
+# 데모 이미지를 불러오는 버튼을 같은 행에 배치
+col1, col2 = st.columns(2)
+
+with col1:
+    if st.button("Demo Image 1"):
+        img_file = Image.open('image/demo1.jpg')
+
+with col2:
+    if st.button("Demo Image 2"):
+        img_file = Image.open('image/demo2.jpg')
+    
+# 사용자가 선택할 수 있는 드롭다운 메뉴 제공
+option = st.selectbox("이미지 입력 방식을 선택하세요:", ('파일 업로드', '사진 촬영'))
 
 # 데모 이미지가 선택되지 않은 경우에만 파일 업로드 및 사진 촬영 기능 활성화
 if img_file is None:
